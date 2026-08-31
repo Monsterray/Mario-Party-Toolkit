@@ -17,6 +17,7 @@ from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, Scrol
 
 # Import resource manager for images
 from utils.resource_manager import ResourceManager
+from utils.randomize_odds import apply_weights_to_entries, random_price, prompt_price_range
 
 # Import items event function for MP7
 try:
@@ -129,10 +130,19 @@ class ItemsMP7Tab(QWidget):
         scroll_area.setWidget(container)
         layout.addWidget(scroll_area)
 
-        # Generate button
+        # Action buttons
+        button_row = QHBoxLayout()
+        button_row.setSpacing(8)
+
+        randomize_btn = PushButton("Randomize Options")
+        randomize_btn.clicked.connect(self.randomize_options)
+        button_row.addWidget(randomize_btn)
+
         generate_btn = PushButton("Generate Codes")
         generate_btn.clicked.connect(self.generate_codes)
-        layout.addWidget(generate_btn)
+        button_row.addWidget(generate_btn)
+
+        layout.addLayout(button_row)
 
         self.setLayout(layout)
 
@@ -291,6 +301,44 @@ class ItemsMP7Tab(QWidget):
             fallback_label.setAlignment(Qt.AlignCenter)
             fallback_label.setStyleSheet("border: 1px solid gray; background: lightgray;")
             return fallback_label
+
+    def randomize_options(self):
+        """Randomize prices and fill each odds column with weights that sum to 100."""
+        price_range = prompt_price_range(self)
+        if price_range is None:
+            return
+        min_price, max_price = price_range
+
+        item_keys = [item_key for _, _, item_key in self.items]
+
+        # Randomize prices (mushroom has no price fields)
+        for item_key in item_keys:
+            for suffix in ["_price1", "_price2", "_price34"]:
+                entry = getattr(self, f"{item_key}{suffix}", None)
+                if entry is None:
+                    continue
+                try:
+                    entry.setText(str(random_price(min_price, max_price)))
+                except RuntimeError:
+                    continue
+
+        # Randomize shop odds columns
+        for suffix in ["_shop12", "_shop34"]:
+            entries = []
+            for item_key in item_keys:
+                entry = getattr(self, f"{item_key}{suffix}", None)
+                if entry is not None:
+                    entries.append(entry)
+            apply_weights_to_entries(entries)
+
+        # Randomize space odds columns
+        for suffix in ["_space1", "_space2", "_space34"]:
+            entries = []
+            for item_key in item_keys:
+                entry = getattr(self, f"{item_key}{suffix}", None)
+                if entry is not None:
+                    entries.append(entry)
+            apply_weights_to_entries(entries)
 
     def generate_codes(self):
         """Generate codes for orb modifications"""

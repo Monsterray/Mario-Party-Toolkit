@@ -16,6 +16,7 @@ from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, CardW
 
 # Import resource manager for images
 from utils.resource_manager import ResourceManager
+from utils.randomize_odds import apply_weights_to_entries
 
 # Import shop odds event functions for MP4
 try:
@@ -131,10 +132,19 @@ class ShopOddsTab(QWidget):
         scroll_area.setWidget(container)
         layout.addWidget(scroll_area)
 
-        # Generate button
+        # Action buttons
+        button_row = QHBoxLayout()
+        button_row.setSpacing(8)
+
+        randomize_btn = PushButton("Randomize Options")
+        randomize_btn.clicked.connect(self.randomize_options)
+        button_row.addWidget(randomize_btn)
+
         generate_btn = PushButton("Generate Codes")
         generate_btn.clicked.connect(self.generate_codes)
-        layout.addWidget(generate_btn)
+        button_row.addWidget(generate_btn)
+
+        layout.addLayout(button_row)
 
         self.setLayout(layout)
 
@@ -397,6 +407,23 @@ class ShopOddsTab(QWidget):
             fallback_label.setAlignment(Qt.AlignCenter)
             fallback_label.setStyleSheet("border: 1px solid gray; background: lightgray;")
             return fallback_label
+
+    def randomize_options(self):
+        """Fill each odds column with random weights that sum to 100."""
+        stages = ["early", "mid", "late"]
+        player_counts = ["1", "2", "34"]
+
+        for stage in stages:
+            for player_count in player_counts:
+                suffix = f"_{stage}_{player_count}_entry"
+                entries = []
+                for attr in dir(self):
+                    if attr.endswith(suffix):
+                        try:
+                            entries.append(getattr(self, attr))
+                        except (AttributeError, RuntimeError):
+                            continue
+                apply_weights_to_entries(entries)
 
     def generate_codes(self):
         """Generate codes for the current game version"""

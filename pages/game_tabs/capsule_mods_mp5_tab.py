@@ -15,6 +15,7 @@ from PyQt5.QtGui import QPixmap
 from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, CardWidget, ScrollArea
 
 from utils.resource_manager import ResourceManager
+from utils.randomize_odds import apply_weights_to_entries, random_price, prompt_price_range
 
 try:
     from events.marioParty5_items import itemsEvent_mp5
@@ -217,9 +218,18 @@ class CapsuleModsMp5Tab(QWidget):
         scroll_area.setWidget(container)
         layout.addWidget(scroll_area)
 
+        button_row = QHBoxLayout()
+        button_row.setSpacing(8)
+
+        randomize_btn = PushButton("Randomize Options")
+        randomize_btn.clicked.connect(self.randomize_options)
+        button_row.addWidget(randomize_btn)
+
         generate_btn = PushButton("Generate Codes")
         generate_btn.clicked.connect(self.generate_codes)
-        layout.addWidget(generate_btn)
+        button_row.addWidget(generate_btn)
+
+        layout.addLayout(button_row)
 
         self.setLayout(layout)
 
@@ -240,6 +250,29 @@ class CapsuleModsMp5Tab(QWidget):
             fallback.setFixedSize(width, height)
             fallback.setAlignment(Qt.AlignCenter)
             return fallback
+
+    def randomize_options(self):
+        """Randomize capsule prices and weights (weights sum to 100)."""
+        price_range = prompt_price_range(self)
+        if price_range is None:
+            return
+        min_price, max_price = price_range
+
+        price_entries = []
+        weight_entries = []
+        for key, entry in self.inputs.items():
+            if key.endswith("Price5"):
+                price_entries.append(entry)
+            elif key.endswith("Weight5"):
+                weight_entries.append(entry)
+
+        for entry in price_entries:
+            try:
+                entry.setText(str(random_price(min_price, max_price)))
+            except RuntimeError:
+                continue
+
+        apply_weights_to_entries(weight_entries)
 
     def generate_codes(self):
         if not itemsEvent_mp5:

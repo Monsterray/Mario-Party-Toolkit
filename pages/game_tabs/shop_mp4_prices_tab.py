@@ -16,6 +16,7 @@ from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, CardW
 
 # Import resource manager for images
 from utils.resource_manager import ResourceManager
+from utils.randomize_odds import random_price, prompt_price_range
 
 # Import shop price event functions for MP4
 try:
@@ -135,10 +136,19 @@ class ShopPricesTab(QWidget):
         scroll_area.setWidget(container)
         layout.addWidget(scroll_area)
 
-        # Generate button
+        # Action buttons
+        button_row = QHBoxLayout()
+        button_row.setSpacing(8)
+
+        randomize_btn = PushButton("Randomize Options")
+        randomize_btn.clicked.connect(self.randomize_options)
+        button_row.addWidget(randomize_btn)
+
         generate_btn = PushButton("Generate Codes")
         generate_btn.clicked.connect(self.generate_codes)
-        layout.addWidget(generate_btn)
+        button_row.addWidget(generate_btn)
+
+        layout.addLayout(button_row)
 
         self.setLayout(layout)
 
@@ -407,6 +417,19 @@ class ShopPricesTab(QWidget):
             fallback_label.setAlignment(Qt.AlignCenter)
             fallback_label.setStyleSheet("border: 1px solid gray; background: lightgray;")
             return fallback_label
+
+    def randomize_options(self):
+        """Randomize all shop prices within a user-chosen min/max range."""
+        price_range = prompt_price_range(self)
+        if price_range is None:
+            return
+        min_price, max_price = price_range
+
+        for entry in self.price_entries.values():
+            try:
+                entry.setText(str(random_price(min_price, max_price)))
+            except RuntimeError:
+                continue
 
     def generate_codes(self):
         """Generate codes for the current game version"""

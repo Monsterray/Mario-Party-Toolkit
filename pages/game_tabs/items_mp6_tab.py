@@ -16,6 +16,7 @@ from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, CardW
 
 # Import resource manager for images
 from utils.resource_manager import ResourceManager
+from utils.randomize_odds import apply_weights_to_entries, random_price, prompt_price_range
 # Import shop price event functions for MP4
 try:
     from events.marioParty6_items import itemsEvent_mp6DX, itemsEvent_mp6
@@ -134,10 +135,19 @@ class ItemsMP6Tab(QWidget):
         scroll_area.setWidget(container)
         layout.addWidget(scroll_area)
 
-        # Generate button
+        # Action buttons
+        button_row = QHBoxLayout()
+        button_row.setSpacing(8)
+
+        randomize_btn = PushButton("Randomize Options")
+        randomize_btn.clicked.connect(self.randomize_options)
+        button_row.addWidget(randomize_btn)
+
         generate_btn = PushButton("Generate Codes")
         generate_btn.clicked.connect(self.generate_codes)
-        layout.addWidget(generate_btn)
+        button_row.addWidget(generate_btn)
+
+        layout.addLayout(button_row)
 
         self.setLayout(layout)
 
@@ -372,6 +382,39 @@ class ItemsMP6Tab(QWidget):
             fallback_label.setAlignment(Qt.AlignCenter)
             fallback_label.setStyleSheet("border: 1px solid gray; background: lightgray;")
             return fallback_label
+
+    def randomize_options(self):
+        """Randomize prices and fill each odds column with weights that sum to 100."""
+        price_range = prompt_price_range(self)
+        if price_range is None:
+            return
+        min_price, max_price = price_range
+
+        # Randomize prices
+        for key, entry in self.price_entries.items():
+            if "_price_" in key:
+                try:
+                    entry.setText(str(random_price(min_price, max_price)))
+                except RuntimeError:
+                    continue
+
+        # Randomize shop odds columns (early / late)
+        for stage in ["early", "late"]:
+            suffix = f"_shopodds_{stage}"
+            entries = [
+                entry for key, entry in self.price_entries.items()
+                if key.endswith(suffix)
+            ]
+            apply_weights_to_entries(entries)
+
+        # Randomize space odds columns (1P / 2P / 34P)
+        for player_count in ["1", "2", "34"]:
+            suffix = f"_spacedds_{player_count}"
+            entries = [
+                entry for key, entry in self.price_entries.items()
+                if key.endswith(suffix)
+            ]
+            apply_weights_to_entries(entries)
 
     def generate_codes(self):
         """Generate codes for the current game version"""
