@@ -5,14 +5,10 @@
 # License: MIT
 # ============================================
 
-import tkinter as tk
-from PIL import Image, ImageTk
 from pathlib import Path
 import sys
 import requests
-import sys
 import webbrowser
-import tkinter.filedialog
 import os
 import threading
 import json
@@ -20,7 +16,7 @@ import subprocess
 
 # PyQt5 imports for the new dialog function
 try:
-    from PyQt5.QtWidgets import QMessageBox, QApplication
+    from PyQt5.QtWidgets import QFileDialog, QMessageBox, QApplication
     from PyQt5.QtCore import QTimer
     PYQT5_AVAILABLE = True
 except ImportError:
@@ -33,9 +29,32 @@ try:
 except ImportError:
     QFLUENT_AVAILABLE = False
 
-# Create a function for file selection
+# Create functions for file selection
+def _file_dialog_filter(filetypes):
+    return ";;".join(f"{label} ({patterns})" for label, patterns in (filetypes or [])) or "All Files (*.*)"
+
+def askopenfilename(parent=None, title="Open File", initialdir="", filetypes=None, **kwargs):
+    filename, _ = QFileDialog.getOpenFileName(
+        parent or QApplication.instance().activeWindow(),
+        title,
+        initialdir,
+        _file_dialog_filter(filetypes),
+    )
+    return filename
+
+def asksaveasfilename(parent=None, title="Save File", initialdir="", initialfile="", filetypes=None, defaultextension=None, **kwargs):
+    filename, _ = QFileDialog.getSaveFileName(
+        parent or QApplication.instance().activeWindow(),
+        title,
+        str(Path(initialdir) / initialfile) if initialfile else initialdir,
+        _file_dialog_filter(filetypes),
+    )
+    if filename and defaultextension and not Path(filename).suffix:
+        filename += defaultextension
+    return filename
+
 def select_file(file_label):
-    filename = tkinter.filedialog.askopenfilename(filetypes=[("Z64 Files", "*.z64"), ("ISO Files", "*.iso"), ("WBFS Files", "*.wbfs"), ("All Files", "*.*")])    # Do something with the selected filename, e.g., display it in the entry
+    filename = askopenfilename(filetypes=[("Z64 Files", "*.z64"), ("ISO Files", "*.iso"), ("WBFS Files", "*.wbfs"), ("All Files", "*.*")])
     file_label.configure(text=filename)
 
 def fetchResource(resource_path: Path) -> Path:

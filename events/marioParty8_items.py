@@ -411,7 +411,7 @@ def savePresetItems8(twiceWeight4, thricePrice4, thriceWeight4, slowgoPrice4, sl
     dueloWeight4 = dueloWeight4.get()
     prices8 = ["5", thricePrice4, slowgoPrice4, springoPrice4, cashzapPrice4, vampirePrice4, bitsizePrice4, blowayPrice4, bowloPrice4, weegleePrice4, thwompPrice4, bulletPrice4, bowserPrice4, dueloPrice4]
     weights8 = [twiceWeight4, thriceWeight4, slowgoWeight4, springoWeight4, cashzapWeight4, vampireWeight4, bitsizeWeight4, blowayWeight4, bowloWeight4, weegleeWeight4, thwompWeight4, bulletWeight4, bowserWeight4, dueloWeight4]
-    file_path = tkinter.filedialog.asksaveasfilename(defaultextension=".mpt", filetypes=[("MPT files", "*.mpt")])
+    file_path = asksaveasfilename(defaultextension=".mpt", filetypes=[("MPT files", "*.mpt")])
     if file_path:
         with open(file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile)
@@ -422,7 +422,7 @@ def savePresetItems8(twiceWeight4, thricePrice4, thriceWeight4, slowgoPrice4, sl
         createDialog("Operation Sucessful", "success", "Presets file saved successfully!.", None)
 
 def loadPresetItems8(twiceWeight4, thricePrice4, thriceWeight4, slowgoPrice4, slowgoWeight4, springoPrice4, springoWeight4, cashzapPrice4, cashzapWeight4, vampirePrice4, vampireWeight4, bitsizePrice4, bitsizeWeight4, blowayPrice4, blowayWeight4, bowloPrice4, bowloWeight4, weegleePrice4, weegleeWeight4, thwompPrice4, thwompWeight4, bulletPrice4, bulletWeight4, bowserPrice4, bowserWeight4, dueloPrice4, dueloWeight4):
-    file_path = tkinter.filedialog.askopenfilename(defaultextension=".mpt", filetypes=[("MPT files", "*.mpt")])
+    file_path = askopenfilename(defaultextension=".mpt", filetypes=[("MPT files", "*.mpt")])
     if file_path:
         prices8In = []
         weights8In = []

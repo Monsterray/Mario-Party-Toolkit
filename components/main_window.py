@@ -9,7 +9,7 @@ import os
 import platform
 from PyQt5.QtWidgets import QMainWindow, QSizePolicy, QApplication
 from PyQt5.QtCore import Qt, QTimer, QSettings, QPoint
-from PyQt5.QtGui import QIcon, QKeySequence, QKeyEvent
+from PyQt5.QtGui import QIcon, QKeySequence, QKeyEvent, QPalette, QColor
 
 from qfluentwidgets import FluentWindow, setTheme, Theme
 
@@ -293,30 +293,7 @@ class MainWindow(FluentWindow):
             # Determine if we're in dark mode using FluentWindow's built-in detection
             is_dark_theme = isDarkTheme()
             
-            # Set only text color - don't change backgrounds or other styling
-            if is_dark_theme:
-                text_color = "#FFFFFF"
-            else:
-                text_color = "#000000"
-            
-            # Apply minimal styling - only target title text, not the entire window
-            title_style = f"""
-            /* Only style title label text color */
-            QLabel[objectName="titleLabel"] {{
-                color: {text_color} !important;
-            }}
-            
-            QWidget[objectName="titleBar"] QLabel {{
-                color: {text_color} !important;
-            }}
-            """
-            
-            # Don't override the entire window stylesheet, just add our specific rule
-            current_style = self.styleSheet()
-            if "QLabel[objectName=\"titleLabel\"]" not in current_style:
-                self.setStyleSheet(current_style + title_style)
-            
-            # Try to find and style title components directly without changing backgrounds
+            text_color = "#FFFFFF" if is_dark_theme else "#000000"
             self.force_title_bar_styling(text_color)
             
             print(f"✓ Title bar text color applied ({'Dark' if is_dark_theme else 'Light'} theme) - Text: {text_color}")
@@ -327,6 +304,16 @@ class MainWindow(FluentWindow):
         """Find and style only the title text, preserving all other styling"""
         try:
             from PyQt5.QtWidgets import QLabel, QWidget
+
+            def set_label_color(label):
+                color = QColor(text_color)
+                if hasattr(label, "setTextColor"):
+                    label.setTextColor(color, color)
+                else:
+                    palette = label.palette()
+                    palette.setColor(QPalette.WindowText, color)
+                    palette.setColor(QPalette.Text, color)
+                    label.setPalette(palette)
             
             # Find all QLabel widgets that might be the title
             all_labels = self.findChildren(QLabel)
@@ -335,13 +322,7 @@ class MainWindow(FluentWindow):
                 if (label.text() == "Mario Party Toolkit" or 
                     label.objectName() in ["titleLabel", "title"] or
                     "title" in label.objectName().lower()):
-                    # Only change text color, preserve existing styling
-                    current_style = label.styleSheet()
-                    # Remove any existing color declarations
-                    import re
-                    current_style = re.sub(r'color\s*:\s*[^;]+;?', '', current_style)
-                    # Add our color
-                    label.setStyleSheet(f"{current_style} color: {text_color} !important;")
+                    set_label_color(label)
                     print(f"  → Styled title label: {label.objectName()} / '{label.text()}'")
             
             # Find title bar widgets and style only their text labels
@@ -353,12 +334,7 @@ class MainWindow(FluentWindow):
                     
                     # Style only text labels in title bar, not the container
                     for child in widget.findChildren(QLabel):
-                        current_style = child.styleSheet()
-                        # Remove any existing color declarations
-                        import re
-                        current_style = re.sub(r'color\s*:\s*[^;]+;?', '', current_style)
-                        # Add our color
-                        child.setStyleSheet(f"{current_style} color: {text_color} !important;")
+                        set_label_color(child)
                         print(f"    → Styled title bar label: '{child.text()}'")
                         
         except Exception as e:
