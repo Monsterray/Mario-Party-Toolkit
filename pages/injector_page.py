@@ -9,10 +9,14 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QFil
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, TextEdit, CardWidget, ScrollArea, MessageBox
 from functions import createDialog, fetchResource
+from utils.code_validation import code_targets, validate_code_target
+from utils.rom_identity import inspect_n64
 import os
 import sys
 import subprocess
 import shutil
+import tempfile
+from pathlib import Path
 
 
 class InjectionWorker(QThread):
@@ -28,22 +32,12 @@ class InjectionWorker(QThread):
         self.save_file_path = None
     
     def run(self):
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="mpt-inject-")
+        work = Path(self.temp_dir.name)
         try:
-            # Create temporary directory
-            if not os.path.exists("tmp"):
-                os.mkdir("tmp")
-            else:
-                try:
-                    shutil.rmtree("tmp")
-                except:
-                    pass
-                try:
-                    os.mkdir("tmp")
-                except:
-                    pass
-            
             # Write codes to file
-            with open("tmp/codes.txt", 'w') as file:
+            codes_path = work / "codes.txt"
+            with codes_path.open("w") as file:
                 file.write("$MPToolkit\n" + self.codes_text)
             
             iso_path = self.file_path
@@ -51,19 +45,32 @@ class InjectionWorker(QThread):
             _, gameExt = os.path.splitext(gameName)
             
             # Handle different file types
-            if gameExt == ".iso" and self.is_file_greater_than_4gb(iso_path) or gameExt == ".wbfs":
-                self.handle_wbfs_iso(iso_path, gameName)
-            elif self.is_file_less_than_100mb(iso_path):  # N64 ROM
-                self.handle_n64_rom(iso_path, gameName)
+            extension = Path(gameName).suffix.lower()
+            if (extension == ".iso" and self.is_file_greater_than_4gb(iso_path)) or extension == ".wbfs":
+                self.handle_wbfs_iso(iso_path, gameName, work, codes_path)
+            elif extension == ".z64":
+                self.handle_n64_rom(iso_path, gameName, work, codes_path)
             else:  # Regular ISO
-                self.handle_regular_iso(iso_path, gameName)
+                self.handle_regular_iso(iso_path, gameName, work, codes_path)
             
-            # Clean up
-            shutil.rmtree("tmp/")
             self.finished.emit(True, "Code injection completed successfully!")
-            
+
         except Exception as e:
             self.finished.emit(False, f"Error during injection: {str(e)}")
+        finally:
+            self.temp_dir.cleanup()
+
+    def tool(self, name):
+        """Resolve a bundled helper and report a useful macOS setup error."""
+        platform_dir = "win32" if sys.platform == "win32" else "darwin"
+        suffix = ".exe" if sys.platform == "win32" else ""
+        path = Path(fetchResource(f"dependencies/{platform_dir}/{name}{suffix}"))
+        if not path.is_file():
+            raise FileNotFoundError(
+                f"Required injection tool is not installed: {path}. "
+                "Install the macOS injection dependencies before using this file type."
+            )
+        return str(path)
     
     def is_file_greater_than_4gb(self, file_path):
         file_size_bytes = os.path.getsize(file_path)
@@ -75,30 +82,23 @@ class InjectionWorker(QThread):
         file_size_mb = file_size_bytes / (1024**2)
         return file_size_mb < 100
     
-    def handle_wbfs_iso(self, iso_path, gameName):
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/wit.exe"), "extract", iso_path, "tmp/tmpROM/"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/wit"), "extract", iso_path, "tmp/tmpROM/"], check=True)
+    def handle_wbfs_iso(self, iso_path, gameName, work, codes_path):
+        rom_dir = work / "tmpROM"
+        subprocess.run([self.tool("wit"), "extract", iso_path, f"{rom_dir}/"], check=True)
         
-        tmpromContents = os.listdir("tmp/tmpROM")
-        folders = [item for item in tmpromContents if os.path.isdir(os.path.join("tmp/tmpROM", item))]
+        folders = [item for item in rom_dir.iterdir() if item.is_dir()]
         folder_name = folders[0]
-        folder_path = os.path.join("tmp/tmpROM", folder_name + "/sys/main.dol")
-        folder_path_raw = os.path.join("tmp/tmpROM", folder_name)
+        folder_path = rom_dir / folder_name.name / "sys" / "main.dol"
+        folder_path_raw = rom_dir / folder_name.name
+        dol_dir = work / "tmpDOL"
+
+        subprocess.run([self.tool("GeckoLoader"), "--hooktype=GX", "--optimize", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
         
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/GeckoLoader.exe"), "--hooktype=GX", "--optimize", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/GeckoLoader"), "--hooktype=GX", "--optimize", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
+        folder_path.unlink()
+        shutil.move(str(dol_dir / "main.dol"), str(folder_path))
         
-        os.remove(folder_path)
-        shutil.move("tmp/tmpDOL/main.dol", folder_path)
-        
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/wit.exe"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/wit"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
+        output = work / "game.wbfs"
+        subprocess.run([self.tool("wit"), "copy", str(folder_path_raw), "--dest=" + str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".wbfs", gameName[:-4] + " (Modded).wbfs", "WBFS Files (*.wbfs)")
@@ -107,13 +107,22 @@ class InjectionWorker(QThread):
             self.msleep(100)
         
         if self.save_file_path:
-            shutil.move("tmp/game.wbfs", self.save_file_path)
-    
-    def handle_n64_rom(self, iso_path, gameName):
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/GSInject.exe"), "tmp/codes.txt", iso_path, "tmp/game.z64"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/GSInject"), "tmp/codes.txt", iso_path, "tmp/tmp.z64"], check=True)
+            shutil.move(str(output), self.save_file_path)
+
+    def handle_n64_rom(self, iso_path, gameName, work, codes_path):
+        identity = inspect_n64(iso_path)
+        targets = code_targets(self.codes_text)
+        if len(targets) == 1:
+            valid, message = validate_code_target(self.codes_text, next(iter(targets)))
+            if not valid:
+                raise ValueError(message)
+            if identity.pp64_game and identity.pp64_game != next(iter(targets)):
+                raise ValueError(
+                    f"ROM hash identifies {identity.pp64_game.upper()}, but the codes target "
+                    f"{next(iter(targets)).upper()}."
+                )
+        output = work / "game.z64"
+        subprocess.run([self.tool("GSInject"), str(codes_path), iso_path, str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".z64", gameName[:-4] + " (Modded).z64", "Z64 Files (*.z64)")
@@ -122,32 +131,25 @@ class InjectionWorker(QThread):
             self.msleep(100)
         
         if self.save_file_path:
-            shutil.move("tmp/game.z64", self.save_file_path)
-    
-    def handle_regular_iso(self, iso_path, gameName):
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/pyisotools.exe"), iso_path, "E", "--dest=tmp/tmpROM/"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/pyisotools"), iso_path, "E", "--dest=tmp/tmpROM/"], check=True)
+            shutil.move(str(output), self.save_file_path)
+
+    def handle_regular_iso(self, iso_path, gameName, work, codes_path):
+        rom_dir = work / "tmpROM"
+        subprocess.run([self.tool("pyisotools"), iso_path, "E", f"--dest={rom_dir}/"], check=True)
         
-        tmpromContents = os.listdir("tmp/tmpROM")
-        folders = [item for item in tmpromContents if os.path.isdir(os.path.join("tmp/tmpROM", item))]
+        folders = [item for item in rom_dir.iterdir() if item.is_dir()]
         folder_name = folders[0]
-        folder_path = os.path.join("tmp/tmpROM", folder_name + "/sys/main.dol")
-        folder_path_raw = os.path.join("tmp/tmpROM", folder_name)
+        folder_path = rom_dir / folder_name.name / "sys" / "main.dol"
+        folder_path_raw = rom_dir / folder_name.name
+        dol_dir = work / "tmpDOL"
         
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/GeckoLoader.exe"), "--hooktype=GX", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/GeckoLoader"), "--hooktype=GX", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
+        subprocess.run([self.tool("GeckoLoader"), "--hooktype=GX", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
         
-        os.remove(folder_path)
-        shutil.move("tmp/tmpDOL/main.dol", folder_path)
+        folder_path.unlink()
+        shutil.move(str(dol_dir / "main.dol"), str(folder_path))
         
-        if sys.platform == "win32":
-            subprocess.run([fetchResource("dependencies/win32/pyisotools.exe"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
-        else:
-            subprocess.run([fetchResource("dependencies/darwin/pyisotools"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
+        output = work / "game.iso"
+        subprocess.run([self.tool("pyisotools"), str(folder_path_raw), "B", "--dest=" + str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".iso", gameName[:-4] + " (Modded).iso", "ISO Files (*.iso)")
@@ -156,7 +158,7 @@ class InjectionWorker(QThread):
             self.msleep(100)
         
         if self.save_file_path:
-            shutil.move("tmp/game.iso", self.save_file_path)
+            shutil.move(str(output), self.save_file_path)
 
 
 class InjectorPage(QWidget):
