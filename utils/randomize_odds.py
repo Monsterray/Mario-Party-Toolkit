@@ -53,13 +53,24 @@ def apply_weights_to_entries(entries, total=100):
         entry.setText(str(weight))
 
 
-def prompt_price_range(parent=None, default_min=3, default_max=30):
+def prompt_int_range(
+    parent=None,
+    *,
+    title="Randomize Options",
+    heading="Range",
+    description="Random values will be chosen between these bounds:",
+    min_label="Min",
+    max_label="Max",
+    default_min=1,
+    default_max=10,
+    allow_zero=True,
+):
     """
-    Show a dialog asking for min/max price.
-    Returns (min_price, max_price) on OK, or None if cancelled.
+    Show a dialog asking for min/max integers.
+    Returns (min_value, max_value) on OK, or None if cancelled.
     """
     dialog = QDialog(parent)
-    dialog.setWindowTitle("Randomize Options")
+    dialog.setWindowTitle(title)
     dialog.setModal(True)
     dialog.setMinimumWidth(320)
 
@@ -67,11 +78,11 @@ def prompt_price_range(parent=None, default_min=3, default_max=30):
     layout.setSpacing(12)
     layout.setContentsMargins(20, 16, 20, 16)
 
-    title = SubtitleLabel("Price Range")
-    title.setAlignment(Qt.AlignCenter)
-    layout.addWidget(title)
+    heading_label = SubtitleLabel(heading)
+    heading_label.setAlignment(Qt.AlignCenter)
+    layout.addWidget(heading_label)
 
-    desc = BodyLabel("Random prices will be chosen between these values:")
+    desc = BodyLabel(description)
     desc.setAlignment(Qt.AlignCenter)
     layout.addWidget(desc)
 
@@ -80,7 +91,7 @@ def prompt_price_range(parent=None, default_min=3, default_max=30):
 
     min_col = QVBoxLayout()
     min_col.setSpacing(4)
-    min_col.addWidget(BodyLabel("Min Price"))
+    min_col.addWidget(BodyLabel(min_label))
     min_entry = LineEdit()
     min_entry.setText(str(default_min))
     min_entry.setPlaceholderText("Min")
@@ -89,7 +100,7 @@ def prompt_price_range(parent=None, default_min=3, default_max=30):
 
     max_col = QVBoxLayout()
     max_col.setSpacing(4)
-    max_col.addWidget(BodyLabel("Max Price"))
+    max_col.addWidget(BodyLabel(max_label))
     max_entry = LineEdit()
     max_entry.setText(str(default_max))
     max_entry.setPlaceholderText("Max")
@@ -115,21 +126,26 @@ def prompt_price_range(parent=None, default_min=3, default_max=30):
 
     def on_accept():
         try:
-            min_price = int(min_entry.text().strip())
-            max_price = int(max_entry.text().strip())
+            min_value = int(min_entry.text().strip())
+            max_value = int(max_entry.text().strip())
         except (ValueError, TypeError):
-            QMessageBox.warning(dialog, "Invalid Input", "Min and max price must be whole numbers.")
+            QMessageBox.warning(dialog, "Invalid Input", "Min and max must be whole numbers.")
             return
 
-        if min_price < 0 or max_price < 0:
-            QMessageBox.warning(dialog, "Invalid Input", "Prices cannot be negative.")
+        if allow_zero:
+            if min_value < 0 or max_value < 0:
+                QMessageBox.warning(dialog, "Invalid Input", "Values cannot be negative.")
+                return
+        else:
+            if min_value < 1 or max_value < 1:
+                QMessageBox.warning(dialog, "Invalid Input", "Values must be at least 1.")
+                return
+
+        if min_value > max_value:
+            QMessageBox.warning(dialog, "Invalid Input", "Min cannot be greater than max.")
             return
 
-        if min_price > max_price:
-            QMessageBox.warning(dialog, "Invalid Input", "Min price cannot be greater than max price.")
-            return
-
-        result["range"] = (min_price, max_price)
+        result["range"] = (min_value, max_value)
         dialog.accept()
 
     ok_btn.clicked.connect(on_accept)
@@ -137,3 +153,37 @@ def prompt_price_range(parent=None, default_min=3, default_max=30):
     if dialog.exec_() != QDialog.Accepted:
         return None
     return result["range"]
+
+
+def prompt_price_range(parent=None, default_min=3, default_max=30):
+    """
+    Show a dialog asking for min/max price.
+    Returns (min_price, max_price) on OK, or None if cancelled.
+    """
+    return prompt_int_range(
+        parent,
+        title="Randomize Prices",
+        heading="Price Range",
+        description="Random prices will be chosen between these values:",
+        min_label="Min Price",
+        max_label="Max Price",
+        default_min=default_min,
+        default_max=default_max,
+    )
+
+
+def prompt_weight_range(parent=None, default_min=0, default_max=100):
+    """
+    Show a dialog asking for min/max weight.
+    Returns (min_weight, max_weight) on OK, or None if cancelled.
+    """
+    return prompt_int_range(
+        parent,
+        title="Randomize Weights",
+        heading="Weight Range",
+        description="Random weights will be chosen between these values:",
+        min_label="Min Weight",
+        max_label="Max Weight",
+        default_min=default_min,
+        default_max=default_max,
+    )
