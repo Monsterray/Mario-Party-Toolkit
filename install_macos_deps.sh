@@ -1,3 +1,11 @@
-arch -arch arm64 brew install python@3.12 python-tk@3.12
+#!/usr/bin/env bash
+set -euo pipefail
 
-/opt/homebrew/Cellar/python@3.12/3.12.1_1/bin/pip3.12 install -r requirements.txt --break-system-packages
+project_root="$(cd "$(dirname "$0")" && pwd)"
+python_command="${PYTHON:-python3}"
+
+"$python_command" -m venv "$project_root/mariovenv"
+"$project_root/mariovenv/bin/python" -m pip install --upgrade pip
+"$project_root/mariovenv/bin/python" -m pip install -r "$project_root/requirements.txt"
+
+echo "Setup complete. Run: $project_root/mariovenv/bin/python $project_root/main.py"

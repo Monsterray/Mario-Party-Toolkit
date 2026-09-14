@@ -51,7 +51,7 @@ def general_injection(file_label, cheatCodeEntry):
             subprocess.run([fetchResource("dependencies/win32/wit.exe"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
         else:
             subprocess.run([fetchResource("dependencies/darwin/wit"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
-        file_path = tkinter.filedialog.asksaveasfilename(defaultextension=".wbfs", initialfile=gameName[:-4] + " (Modded).wbfs", filetypes=[("WBFS Files", "*.wbfs")])
+        file_path = asksaveasfilename(defaultextension=".wbfs", initialfile=gameName[:-4] + " (Modded).wbfs", filetypes=[("WBFS Files", "*.wbfs")])
         shutil.move("tmp/game.iso", file_path)
         shutil.rmtree("tmp/") 
     elif is_file_less_than_100mb(iso_path): # assuming N64 Rom
@@ -59,7 +59,7 @@ def general_injection(file_label, cheatCodeEntry):
             subprocess.run([fetchResource("dependencies/win32/GSInject.exe"), "tmp/codes.txt", iso_path, "tmp/game.z64"], check=True)
         else:
             subprocess.run([fetchResource("dependencies/darwin/GSInject"), "tmp/codes.txt", iso_path, "tmp/tmp.z64"], check=True)
-        file_path = tkinter.filedialog.asksaveasfilename(defaultextension=".z64", initialfile=gameName[:-4] + " (Modded).z64", filetypes=[("Z64 Files", "*.z64")])
+        file_path = asksaveasfilename(defaultextension=".z64", initialfile=gameName[:-4] + " (Modded).z64", filetypes=[("Z64 Files", "*.z64")])
         shutil.move("tmp/game.z64", file_path)
         shutil.rmtree("tmp/")
     else:
@@ -82,6 +82,6 @@ def general_injection(file_label, cheatCodeEntry):
             subprocess.run([fetchResource("dependencies/win32/pyisotools.exe"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
         else:
             subprocess.run([fetchResource("dependencies/darwin/pyisotools"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
-        file_path = tkinter.filedialog.asksaveasfilename(defaultextension=".iso", initialfile=gameName[:-4] + " (Modded).iso", filetypes=[("ISO Files", "*.iso")])
+        file_path = asksaveasfilename(defaultextension=".iso", initialfile=gameName[:-4] + " (Modded).iso", filetypes=[("ISO Files", "*.iso")])
         shutil.move("tmp/game.iso", file_path)
         shutil.rmtree("tmp/")

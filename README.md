@@ -1,145 +1,133 @@
 # Mario Party Toolkit
 
-A comprehensive desktop application for modifying Mario Party games, built with PyQt6 and featuring a beautiful Material Design theme.
+Mario Party Toolkit is a PyQt5 desktop application for generating gameplay-modification codes for Mario Party 1–9 and Mario Party DS.
 
 ## Features
 
-- **Mario Party 1-9 & DS Support**: Tools for all major Mario Party games
-- **Code Generation**: Generate cheat codes for various game modifications
-- **Material Design UI**: Beautiful, modern interface with qt-material theme
-- **Cross-Platform**: Works on Windows, macOS, and Linux
-- **Native Integration**: Can call external executables and tools
-- **Responsive Layout**: Clean, intuitive interface that adapts to different screen sizes
+- Coin, star, item, shop, minigame, handicap, and board-specific modifiers
+- N64 GameShark-style and GameCube/Wii Gecko-style code generation
+- Code injection interface for supported ROM and disc-image workflows
+- Light and dark themes using PyQt-Fluent-Widgets
+- Windows, macOS, and Linux application builds with PyInstaller
+
+Use game images dumped from copies you own. Keep an unmodified backup and apply generated codes to a working copy.
 
 ## Requirements
 
-- Python 3.8 or higher
-- PyQt6
-- Pillow (PIL)
-- requests
-- qt-material (for Material Design theme)
+- Python 3.10 or newer
+- A working `python3` command
+- macOS, Windows, or Linux
 
-## Installation
+Python packages are listed in `requirements.txt` and should be installed inside a virtual environment.
 
-1. Clone the repository:
+## macOS setup
+
+From Terminal, open the project directory and run:
+
 ```bash
-git clone https://github.com/yourusername/Mario-Party-Toolkit.git
-cd Mario-Party-Toolkit
+cd /path/to/Mario-Party-Toolkit
+./install_macos_deps.sh
+./mariovenv/bin/python main.py
 ```
 
-2. Install dependencies:
+The setup script creates `mariovenv` and installs all Python dependencies into it. It does not modify the Homebrew or system Python installation.
+
+To perform the same setup manually:
+
 ```bash
-python install.py
+python3 -m venv mariovenv
+./mariovenv/bin/python -m pip install --upgrade pip
+./mariovenv/bin/python -m pip install -r requirements.txt
+./mariovenv/bin/python main.py
 ```
 
-3. Run the application:
+If `python3` is unavailable, install a current Python release from [python.org](https://www.python.org/downloads/macos/) or Homebrew, then repeat the commands above.
+
+## Windows and Linux setup
+
+Create a virtual environment, activate it using the platform's normal command, and install the requirements:
+
 ```bash
-python run.py
+python -m venv mariovenv
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+python main.py
 ```
 
-## Material Design Theme
-
-The application uses the `qt-material` package to provide a beautiful Material Design interface:
-
-- **Dark Teal Theme**: Modern dark theme with teal accents
-- **Responsive Elements**: Smooth animations and hover effects
-- **Professional Look**: Clean, modern interface that looks great on all platforms
-- **Fallback Support**: Gracefully falls back to default styling if qt-material is unavailable
-
-### Available Themes
-
-The qt-material package provides many theme options. You can easily change themes by modifying the `apply_material_theme()` method in `main.py`:
-
-```python
-# Change from dark_teal.xml to other themes like:
-# - dark_blue.xml
-# - dark_pink.xml
-# - light_blue.xml
-# - light_teal.xml
-apply_stylesheet(self, theme='dark_blue.xml')
-```
-
-## Usage
-
-The application provides a tabbed interface for different Mario Party games:
-
-- **Coins Mods**: Modify coin amounts for different space types
-- **Block Weights**: Adjust dice block probabilities
-- **Minigame Replacement**: Replace minigames with others
-- **Star Handicaps**: Set starting star counts for players
-- **Item Modifications**: Change item effects and availability
-
-## Project Structure
-
-```
-Mario-Party-Toolkit/
-├── main.py              # Main PyQt6 application with Material Design
-├── run.py               # Launcher script
-├── functions.py         # Utility functions
-├── codes/               # Game-specific code generation
-├── events/              # Event handling logic
-├── assets/              # Images and resources
-├── requirements.txt     # Python dependencies including qt-material
-├── install.py           # Installation helper script
-├── build.py             # Build script for executables
-└── test_app.py          # Testing script
-```
+When the environment is not activated, invoke its Python executable directly as shown in the macOS example.
 
 ## Building
 
-### Windows
-```bash
-python build.py
-# Or manually:
-pyinstaller --onefile --windowed --icon=assets/icons/diceBlock.ico main.py
-```
-
 ### macOS
+
+```bash
+./build-macos.sh
+```
+
+The build outputs are:
+
+- `dist/MarioPartyToolkit`
+- `dist/MarioPartyToolkit.app`
+
+The standalone executable can be launched from Terminal when diagnosing startup errors:
+
+```bash
+./dist/MarioPartyToolkit
+```
+
+### Any supported platform
+
+Run the build using the virtual environment's Python:
+
 ```bash
 python build.py
-# Or manually:
-pyinstaller --onefile --windowed --icon=assets/icons/diceBlock.icns main.py
 ```
 
-### Linux
-```bash
-python build.py
-# Or manually:
-pyinstaller --onefile --windowed --icon=assets/icons/diceBlock.png main.py
-```
+`build.py` resolves assets relative to the project directory, includes `assets/` and `dependencies/`, and uses the active Python interpreter's PyInstaller installation.
 
-## Testing
+## macOS troubleshooting
 
-Run the test suite to verify everything works correctly:
+### `ModuleNotFoundError: PyQt5`
+
+Install the requirements with the same virtual-environment Python used for the build:
 
 ```bash
-python test_app.py
+./mariovenv/bin/python -m pip install -r requirements.txt
 ```
 
-This will test:
-- All required imports
-- Resource file availability
-- Material Design theme functionality
-- Application creation
+### `ModuleNotFoundError: tkinter`
+
+Current versions of the toolkit use Qt file dialogs and do not require Tk. Pull the latest source and rebuild; installing Tk should not be necessary.
+
+### Missing icon or assets
+
+Build from the current source using `build.py` or `build-macos.sh`. Both scripts resolve absolute asset paths and bundle the complete `assets/` directory.
+
+### Inspecting a packaged startup failure
+
+Run `./dist/MarioPartyToolkit` in Terminal and copy the complete traceback. Running the executable directly is more useful for diagnosis than double-clicking the `.app` bundle.
+
+## Project structure
+
+```text
+codes/          Generated-code templates for each game
+events/         UI event and conversion logic
+pages/          Application pages and the injector interface
+components/     Main window and navigation components
+utils/          Resource, scaling, and randomization helpers
+assets/         Icons, logos, and UI images
+dependencies/   External injection helpers
+build.py        Cross-platform PyInstaller build
+```
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+1. Fork the repository.
+2. Create a focused branch.
+3. Run the application from a clean virtual environment.
+4. Build and launch the packaged executable for your platform.
+5. Submit a pull request describing the platform and Python version tested.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
-
-## Credits
-
-- **Author**: Nayla Hanegan (tabitha@tabs.gay)
-- **Original Framework**: CustomTkinter
-- **New Framework**: PyQt6 with qt-material
-- **License**: MIT
-
-## Support
-
-If you encounter any issues or have questions, please open an issue on GitHub.
+Mario Party Toolkit is released under the [MIT License](LICENSE.md).

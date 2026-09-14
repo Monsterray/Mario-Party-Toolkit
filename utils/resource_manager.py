@@ -11,6 +11,7 @@
 # ============================================
 
 import os
+import sys
 from PyQt5.QtGui import QIcon
 from qfluentwidgets import FluentIcon
 
@@ -19,12 +20,8 @@ class ResourceManager:
     @staticmethod
     def get_resource_path(relative_path):
         """Get the absolute path to a resource file"""
-        # Get the directory where this script is located
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Go up one level to the project root
-        project_root = os.path.dirname(current_dir)
-        # Construct the full path
-        return os.path.join(project_root, relative_path)
+        base_path = getattr(sys, "_MEIPASS", os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return os.path.join(base_path, relative_path)
 
     @staticmethod
     def get_icon(icon_path):
@@ -43,7 +40,7 @@ class ResourceManager:
             print(f"⚠️  Error creating icon from {icon_path}: {e}")
         
         # Fallback to default icon
-        return FluentIcon.APPLICATION
+        return QIcon()
 
     @staticmethod
     def get_game_icon(logo_path):
