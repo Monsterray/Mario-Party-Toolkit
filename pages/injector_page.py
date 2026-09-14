@@ -79,7 +79,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/wit.exe"), "extract", iso_path, "tmp/tmpROM/"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/wit"), "extract", iso_path, "tmp/tmpROM/"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/wit"), "extract", iso_path, "tmp/tmpROM/"], check=True)
         
         tmpromContents = os.listdir("tmp/tmpROM")
         folders = [item for item in tmpromContents if os.path.isdir(os.path.join("tmp/tmpROM", item))]
@@ -90,7 +90,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/GeckoLoader.exe"), "--hooktype=GX", "--optimize", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/GeckoLoader"), "--hooktype=GX", "--optimize", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/GeckoLoader"), "--hooktype=GX", "--optimize", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
         
         os.remove(folder_path)
         shutil.move("tmp/tmpDOL/main.dol", folder_path)
@@ -98,7 +98,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/wit.exe"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/wit"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/wit"), "copy", folder_path_raw, "--dest=tmp/game.wbfs"], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".wbfs", gameName[:-4] + " (Modded).wbfs", "WBFS Files (*.wbfs)")
@@ -113,7 +113,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/GSInject.exe"), "tmp/codes.txt", iso_path, "tmp/game.z64"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/GSInject"), "tmp/codes.txt", iso_path, "tmp/tmp.z64"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/GSInject"), "tmp/codes.txt", iso_path, "tmp/game.z64"], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".z64", gameName[:-4] + " (Modded).z64", "Z64 Files (*.z64)")
@@ -128,7 +128,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/pyisotools.exe"), iso_path, "E", "--dest=tmp/tmpROM/"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/pyisotools"), iso_path, "E", "--dest=tmp/tmpROM/"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/pyisotools"), iso_path, "E", "--dest=tmp/tmpROM/"], check=True)
         
         tmpromContents = os.listdir("tmp/tmpROM")
         folders = [item for item in tmpromContents if os.path.isdir(os.path.join("tmp/tmpROM", item))]
@@ -139,7 +139,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/GeckoLoader.exe"), "--hooktype=GX", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/GeckoLoader"), "--hooktype=GX", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/GeckoLoader"), "--hooktype=GX", folder_path, "tmp/codes.txt", "--dest=tmp/tmpDOL"], check=True)
         
         os.remove(folder_path)
         shutil.move("tmp/tmpDOL/main.dol", folder_path)
@@ -147,7 +147,7 @@ class InjectionWorker(QThread):
         if sys.platform == "win32":
             subprocess.run([fetchResource("dependencies/win32/pyisotools.exe"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
         else:
-            subprocess.run([fetchResource("dependencies/darwin/pyisotools"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
+            subprocess.run([fetchResource("dependencies/macOS/pyisotools"), folder_path_raw, "B", "--dest=../../game.iso"], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".iso", gameName[:-4] + " (Modded).iso", "ISO Files (*.iso)")
