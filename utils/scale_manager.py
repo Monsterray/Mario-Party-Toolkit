@@ -89,6 +89,13 @@ class ScaleManager:
         for widget in [root, *root.findChildren(QObject)]:
             if not hasattr(widget, "property") or widget.property("mptScaled"):
                 continue
+            # qfluentwidgets' switch indicator is custom-painted with fixed
+            # 42x22 geometry and fixed slider coordinates; do not shrink it
+            # without also rewriting the third-party paint implementation.
+            if (widget.__class__.__module__.startswith("qfluentwidgets") and
+                    widget.__class__.__name__ in {"Indicator", "SwitchButton"}):
+                widget.setProperty("mptScaled", True)
+                continue
             if hasattr(widget, "minimumWidth"):
                 minimum = widget.minimumSize()
                 maximum = widget.maximumSize()

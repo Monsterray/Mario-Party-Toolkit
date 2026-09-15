@@ -37,12 +37,25 @@ from pages.game_tabs.items_mp6_tab import ItemsMP6Tab
 
 
 class TextSizedTabBar(QTabBar):
-    """Size every tab for its full label, then scroll when space runs out."""
+    """Size every tab for the longest label, then scroll when space runs out."""
+
+    def tabInserted(self, index):
+        super().tabInserted(index)
+        self.updateGeometry()
 
     def tabSizeHint(self, index):
         size = super().tabSizeHint(index)
-        text_width = self.fontMetrics().horizontalAdvance(self.tabText(index)) + 24
-        size.setWidth(max(size.width(), text_width))
+        longest_width = max(
+            [
+                self.fontMetrics().horizontalAdvance(self.tabText(i)) + 24
+                for i in range(self.count())
+            ] + [
+                super().tabSizeHint(i).width()
+                for i in range(self.count())
+            ],
+            default=size.width(),
+        )
+        size.setWidth(longest_width)
         return size
 
 

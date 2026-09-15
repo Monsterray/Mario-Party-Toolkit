@@ -1,6 +1,7 @@
 import unittest
 
 from PyQt5.QtWidgets import QApplication, QLabel, QWidget
+from qfluentwidgets import SwitchButton
 
 from utils.scale_manager import ScaleManager
 
@@ -35,6 +36,14 @@ class ScaleManagerTests(unittest.TestCase):
         self.assertEqual(label.maximumWidth(), 45)
         self.assertIn("font-size: 12px", label.styleSheet())
         self.assertIn("padding: 6px", label.styleSheet())
+
+    def test_scale_widget_tree_preserves_qfluent_switch_geometry(self):
+        root = QWidget()
+        switch = SwitchButton("Toggle", root)
+        ScaleManager.scale_widget_tree(root, 0.75)
+        self.assertEqual(switch.height(), 22)
+        self.assertEqual(switch.indicator.size().width(), 42)
+        self.assertEqual(switch.indicator.size().height(), 22)
 
 
 if __name__ == "__main__":
