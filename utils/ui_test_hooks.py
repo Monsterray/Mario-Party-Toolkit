@@ -52,10 +52,10 @@ class UITestHooks:
         def navigate_then_capture():
             if options.mpt_test_game:
                 window.navigationInterface.setCurrentItem(options.mpt_test_game)
-            QTimer.singleShot(150, capture)
+            QTimer.singleShot(750, capture)
 
-        QTimer.singleShot(100, navigate_then_capture)
-        QTimer.singleShot(max(500, options.mpt_test_quit_after),
+        QTimer.singleShot(250, navigate_then_capture)
+        QTimer.singleShot(max(1500, options.mpt_test_quit_after),
                           QApplication.instance().quit)
 
     @staticmethod
