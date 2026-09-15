@@ -16,28 +16,32 @@ import platform
 import subprocess
 from pathlib import Path
 
-def install_pyinstaller():
-    """Install PyInstaller if not already installed"""
+def install_dependencies(project_root):
+    """Install project dependencies if the build environment is incomplete"""
     try:
-        import PyInstaller
-        print("PyInstaller already installed")
+        for module in ("PyInstaller", "PyQt5", "qfluentwidgets", "PIL", "requests", "darkdetect", "pyperclip"):
+            __import__(module)
+        print("Project dependencies already installed")
     except ImportError:
-        print("Installing PyInstaller...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "pyinstaller"])
+        print("Installing project dependencies...")
+        subprocess.check_call([
+            sys.executable, "-m", "pip", "install", "-r", str(project_root / "requirements.txt")
+        ])
 
 def build_executable():
     """Build the executable for the current platform"""
     system = platform.system().lower()
+    project_root = Path(__file__).resolve().parent
     
     # Platform-specific settings
     if system == "windows":
-        icon = "assets/icons/diceBlock.ico"
+        icon = project_root / "assets/icons/diceBlock.ico"
         output_name = "MarioPartyToolkit.exe"
     elif system == "darwin":  # macOS
-        icon = "assets/icons/diceBlock.icns"
+        icon = project_root / "assets/icons/diceBlock.icns"
         output_name = "MarioPartyToolkit"
     else:  # Linux
-        icon = "assets/icons/diceBlock.png"
+        icon = project_root / "assets/icons/diceBlock.png"
         output_name = "MarioPartyToolkit"
     
     # Check if icon exists
@@ -47,19 +51,22 @@ def build_executable():
     
     # Build command
     cmd = [
-        "pyinstaller",
+        sys.executable, "-m", "PyInstaller",
+        "--noconfirm",
         "--onefile",
         "--windowed",
         "--name", output_name,
-        "--distpath", "dist",
-        "--workpath", "build",
-        "--specpath", "build"
+        "--distpath", str(project_root / "dist"),
+        "--workpath", str(project_root / "build"),
+        "--specpath", str(project_root / "build"),
+        "--add-data", f"{project_root / 'assets'}{os.pathsep}assets",
+        "--add-data", f"{project_root / 'dependencies'}{os.pathsep}dependencies"
     ]
     
     if icon:
-        cmd.extend(["--icon", icon])
+        cmd.extend(["--icon", str(icon)])
     
-    cmd.append("main.py")
+    cmd.append(str(project_root / "main.py"))
     
     print(f"Building for {system}...")
     print(f"Command: {' '.join(cmd)}")
@@ -77,12 +84,13 @@ def main():
     print("=" * 40)
     
     # Check if we're in the right directory
-    if not os.path.exists("main.py"):
+    project_root = Path(__file__).resolve().parent
+    if not (project_root / "main.py").exists():
         print("Error: main.py not found. Please run this script from the project root directory.")
         sys.exit(1)
     
     # Install PyInstaller if needed
-    install_pyinstaller()
+    install_dependencies(project_root)
     
     # Build the executable
     build_executable()

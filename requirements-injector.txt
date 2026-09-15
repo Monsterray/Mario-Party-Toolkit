@@ -1,0 +1,4 @@
+# Optional dependencies for the official GeckoLoader CLI backend.
+chardet
+beautifulsoup4
+colorama

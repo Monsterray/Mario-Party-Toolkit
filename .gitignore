@@ -1,8 +1,26 @@
 build/
 dist/
+mariovenv/
+venv/
+.venv/
+env/
+ENV/
 __pycache__/
 *.pyc
 .DS_Store
 *.spec
 *.json
 tmp/
+
+# Test, coverage, and type-checker output
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Logs and local build artifacts
+*.log
+*.tmp
+*.egg-info/
