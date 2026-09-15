@@ -102,26 +102,24 @@ class MarioPartyPages:
                 padding: 0;
             }
             QTabBar::tab {
-                background: palette(button);
-                color: palette(text);
+                background: #2B2B2B;
+                color: #E0E0E0;
                 border: none;
-                border-radius: 8px 8px 0 0;
-                padding: 12px 20px;
+                border-radius: 6px;
+                padding: 8px 14px;
                 margin-right: 2px;
                 font-size: 15px;
                 font-weight: 500;
-                min-width: 120px;
-                min-height: 32px;
-                border-bottom: 2px solid transparent;
+                min-width: 100px;
+                min-height: 24px;
             }
             QTabBar::tab:selected {
-                background: palette(light);
-                color: palette(text);
-                border-bottom: 2px solid palette(mid);
+                background: #4A90E2;
+                color: white;
             }
             QTabBar::tab:hover:!selected {
-                background: palette(mid);
-                color: palette(text);
+                background: #3A3A3A;
+                color: #FFFFFF;
             }
         """
 
