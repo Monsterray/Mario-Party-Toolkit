@@ -50,8 +50,12 @@ class UITestHooks:
                 window.grab().save(str(options.mpt_test_screenshot))
 
         def navigate_then_capture():
+            page = window.findChild(QWidget, f"{options.mpt_test_game}Page") if options.mpt_test_game else None
             if options.mpt_test_game:
                 window.navigationInterface.setCurrentItem(options.mpt_test_game)
+            if page is not None and hasattr(window, "stackedWidget"):
+                # Bypass the 300 ms navigation animation for deterministic tests.
+                window.stackedWidget.view.setCurrentWidget(page, duration=0)
             QTimer.singleShot(750, capture)
 
         QTimer.singleShot(250, navigate_then_capture)
