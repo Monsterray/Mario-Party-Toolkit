@@ -15,6 +15,7 @@ from qfluentwidgets import FluentTranslator, setFontFamilies
 from components.mario_party_toolkit import MarioPartyToolkit
 from utils.resource_manager import ResourceManager
 from utils.scale_manager import ScaleManager
+from utils.ui_test_hooks import UITestHooks
 from version import versionString
 
 
@@ -59,6 +60,7 @@ def main():
     window = MarioPartyToolkit()
     ScaleManager.scale_widget_tree(window, scale_factor)
     window.show()
+    UITestHooks.install(window, sys.argv[1:])
     
     sys.exit(app.exec_())
 

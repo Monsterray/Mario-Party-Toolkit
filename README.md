@@ -48,6 +48,25 @@ For packaged-app diagnosis, run the standalone executable from Terminal:
 ./dist/MarioPartyToolkit
 ```
 
+### GUI inspection hooks
+
+The GUI has opt-in hooks for deterministic local inspection. They select a
+page and tab, capture the window, dump measured tab/switch geometry, and exit
+automatically. Normal launches are unchanged:
+
+```bash
+./mariovenv/bin/python main.py \
+  --mpt-test-game marioParty2 \
+  --mpt-test-tab "Minigame Replacement" \
+  --mpt-test-screenshot /private/tmp/mpt-ui.png \
+  --mpt-test-dump /private/tmp/mpt-ui.json
+```
+
+The same flags work with `./dist/MarioPartyToolkit`. Use
+`--mpt-test-quit-after 3000` to keep the window open for three seconds.
+The JSON records each tab's rendered rectangle and each qfluent switch
+indicator's rectangle, making clipping and alignment regressions measurable.
+
 ## Headless and emulator testing
 
 The standalone CLI keeps repeatable checks outside the GUI. Run it from the project root:
