@@ -11,8 +11,6 @@
 # ============================================
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QTabBar, QSizePolicy
-import re
-
 from PyQt5.QtCore import QEvent, QTimer, Qt
 from qfluentwidgets import BodyLabel
 
@@ -44,6 +42,8 @@ class TextSizedTabBar(QTabBar):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._tab_alignment = None
+        if parent is not None:
+            parent.installEventFilter(self)
 
     def tabInserted(self, index):
         super().tabInserted(index)
@@ -54,11 +54,14 @@ class TextSizedTabBar(QTabBar):
         super().resizeEvent(event)
         QTimer.singleShot(0, self._update_alignment)
 
-    def changeEvent(self, event):
-        super().changeEvent(event)
-        if event.type() in (QEvent.StyleChange, QEvent.FontChange):
+    def eventFilter(self, watched, event):
+        if watched is self.parentWidget() and event.type() in (
+            QEvent.StyleChange,
+            QEvent.FontChange,
+        ):
             self._tab_alignment = None
             QTimer.singleShot(0, self._update_alignment)
+        return super().eventFilter(watched, event)
 
     def _update_alignment(self):
         """Center tabs when they fit; otherwise keep them in the scroll area."""
@@ -72,12 +75,21 @@ class TextSizedTabBar(QTabBar):
             return
 
         stylesheet = tab_widget.styleSheet()
-        updated = re.sub(
-            r"(QTabWidget::tab-bar\s*\{[^}]*alignment:\s*)(?:left|center)",
-            rf"\g<1>{alignment}",
-            stylesheet,
-            count=1,
-        )
+        marker = "QTabWidget::tab-bar"
+        start = stylesheet.find(marker)
+        end = stylesheet.find("}", start)
+        if start < 0 or end < 0:
+            return
+
+        block = stylesheet[start:end]
+        lines = block.splitlines()
+        updated_block = [
+            f"                alignment: {alignment};"
+            if "alignment:" in line
+            else line
+            for line in lines
+        ]
+        updated = stylesheet[:start] + "\n".join(updated_block) + stylesheet[end:]
         self._tab_alignment = alignment
         if updated != stylesheet:
             tab_widget.setStyleSheet(updated)
