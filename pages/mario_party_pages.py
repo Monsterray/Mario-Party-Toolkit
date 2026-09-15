@@ -106,12 +106,12 @@ class MarioPartyPages:
                 color: palette(text);
                 border: none;
                 border-radius: 8px 8px 0 0;
-                padding: 16px 24px;
+                padding: 12px 20px;
                 margin-right: 2px;
-                font-size: 14px;
+                font-size: 15px;
                 font-weight: 500;
-                min-width: 140px;
-                min-height: 24px;
+                min-width: 120px;
+                min-height: 32px;
                 border-bottom: 2px solid transparent;
             }
             QTabBar::tab:selected {
@@ -126,36 +126,11 @@ class MarioPartyPages:
         """
 
     def apply_tab_style(self, tab_widget):
-        tab_widget.setStyleSheet("""
-            QTabBar::tab {
-                min-width: 10px;
-                max-width: 300px;
-                padding: 4px 16px;
-                margin-right: 1px;
-                border-radius: 6px;
-            }
-            QTabBar::tab:selected {
-                background: #4A90E2;
-                color: white;
-            }
-            QTabBar::tab:!selected {
-                background: #232323;
-                color: #E0E0E0;
-            }
-            QTabWidget::pane {
-                border: none;
-            }
-        """)
+        tab_widget.setStyleSheet(self.get_tab_stylesheet())
         tab_widget.tabBar().setMovable(True)
         tab_widget.tabBar().setUsesScrollButtons(True)
-        # Dynamically size tabs to fit text
-        from PyQt5.QtGui import QFontMetrics
-        font_metrics = QFontMetrics(tab_widget.tabBar().font())
-        for i in range(tab_widget.count()):
-            text = tab_widget.tabText(i)
-            width = font_metrics.width(text)
-            tab_widget.tabBar().setTabMinimumWidth(i, width)
-            tab_widget.tabBar().setTabMaximumWidth(i, width)
+        tab_widget.tabBar().setExpanding(False)
+        tab_widget.tabBar().setElideMode(Qt.ElideNone)
 
     def create_mp1_tabs(self, tab_widget):
         self.apply_tab_style(tab_widget)

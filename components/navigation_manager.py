@@ -31,9 +31,9 @@ class NavigationManager:
         self.navigation_interface.setReturnButtonVisible(False)
         self.navigation_interface.setAcrylicEnabled(False)
         
-        # Try to minimize the internal title bar display
+        # Keep the navigation from imposing a desktop-sized window minimum.
         try:
-            self.navigation_interface.setMinimumWidth(200)
+            self.navigation_interface.setMinimumWidth(72)
         except:
             pass  # Ignore if this method doesn't exist
         

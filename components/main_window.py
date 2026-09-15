@@ -47,7 +47,7 @@ class MainWindow(FluentWindow):
         
         # Keep the window resizable on smaller displays. Child fixed sizes are
         # scaled once after the complete widget tree is constructed.
-        self.setMinimumSize(800, 500)
+        self.setMinimumSize(500, 320)
         
         # Fit to display - use available screen size with small margins
         margin = 200  # Leave some margin from screen edges
