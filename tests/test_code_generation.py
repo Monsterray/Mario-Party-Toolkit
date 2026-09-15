@@ -6,7 +6,7 @@ from importlib import import_module
 from utils.code_validation import code_targets
 
 
-CODE_LINE = re.compile(r"[0-9A-Fa-f]{8}\s+[0-9A-Fa-f]{4}$")
+CODE_LINE = re.compile(r"[0-9A-Fa-f]{8}\s+(?:[0-9A-Fa-f]{2}|[0-9A-Fa-f]{4})$")
 SHORT_HEX = {
     "one", "two", "three", "four", "five", "six", "seven", "eight",
     "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",

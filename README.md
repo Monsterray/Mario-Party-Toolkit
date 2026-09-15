@@ -48,6 +48,29 @@ For packaged-app diagnosis, run the standalone executable from Terminal:
 ./dist/MarioPartyToolkit
 ```
 
+## Headless and emulator testing
+
+The standalone CLI keeps repeatable checks outside the GUI. Run it from the project root:
+
+```bash
+./mariovenv/bin/python tools/mpt_cli.py inspect-rom /path/to/game.z64 --game mp1 --pretty
+./mariovenv/bin/python tools/mpt_cli.py validate-code codes.txt --game mp1 --pretty
+./mariovenv/bin/python tools/mpt_cli.py generate-code codes.marioParty1.getStarSpaceCodeOne 0A 00 10
+```
+
+`test` combines ROM inspection, code validation, a safe injection attempt, and a bounded Mupen64Plus launch. It never overwrites the input ROM. Use `-` as the code path to connect a generator directly to the test runner:
+
+```bash
+MUPEN=/path/to/mupen64plus
+ROM=/path/to/mario-party-1.z64
+./mariovenv/bin/python tools/mpt_cli.py generate-code \
+  codes.marioParty1.getStarSpaceCodeOne 0A 00 10 |
+./mariovenv/bin/python tools/mpt_cli.py test "$ROM" --game mp1 --code - \
+  --mupen "$MUPEN" --output-dir test-results --pretty
+```
+
+The JSON report distinguishes ROM-header parsing from gameplay verification. Mupen may still stop when its OpenGL context cannot be created; that is an emulator/display limitation, not proof that the ROM or code is wrong. On an Intel Mac, verify native tool architecture with `file`; the bundled macOS `GSInject` currently requires an arm64 injector or an Intel-compatible replacement configured with `MPT_GSINJECT`.
+
 ## Injector backends
 
 The injector uses these tools:
@@ -106,6 +129,7 @@ components/     Main window and navigation
 utils/          Resource, scaling, validation, and injector helpers
 assets/         Icons, logos, and UI images
 dependencies/   External injection helpers
+tools/          Headless CLI and test harnesses
 build.py        Cross-platform PyInstaller build
 ```
 
