@@ -33,6 +33,26 @@ class MptCliTests(unittest.TestCase):
         with patch.dict(os.environ, {"MPT_GSINJECT": "/tmp/GSInject"}):
             self.assertEqual(mpt_cli.locate_injector(), Path("/tmp/GSInject"))
 
+    def test_skip_mupen_reports_injection_only_success(self):
+        completed = type("Completed", (), {"stdout": "saved", "stderr": "", "returncode": 0})()
+        with tempfile.TemporaryDirectory() as directory:
+            code = Path(directory) / "code.txt"
+            code.write_text("MP3 - test\n81000000 0001\n", encoding="utf-8")
+            with patch.dict(os.environ, {"MPT_GSINJECT": "/tmp/GSInject"}), patch(
+                "tools.mpt_cli.locate_injector", return_value=Path("/tmp/GSInject")
+            ), patch("tools.mpt_cli.inspect_n64") as inspect, patch(
+                "tools.mpt_cli.inject_copy", return_value={"injected": True}
+            ):
+                inspect.return_value = type(
+                    "Identity", (), {"path": Path("game.z64"), "size": 1, "md5": "x", "sha256": "y", "byte_order": "z64", "internal_name": "MarioParty3", "region": "E", "version": 0, "pp64_game": "mp3"}
+                )()
+                result = mpt_cli.main([
+                    "test", "game.z64", "--game", "mp3", "--code", str(code),
+                    "--output-dir", str(Path(directory) / "out"),
+                    "--skip-mupen",
+                ])
+            self.assertEqual(result, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

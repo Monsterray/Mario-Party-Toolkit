@@ -98,6 +98,8 @@ MUPEN="$HOME/Tools/mario-party-rom-lab/source/mupen64plus-2.6.0/mupen64plus.app/
 
 The MP3 generator expects `switch` as one hexadecimal digit. For example, use `A`, not `00`; the CLI rejects malformed generated lines before injection.
 
+For a fast injection-only matrix, omit `--mupen` and add `--skip-mupen`; this returns success after validation and injection without launching an emulator.
+
 ## Injector backends
 
 The injector uses these tools:

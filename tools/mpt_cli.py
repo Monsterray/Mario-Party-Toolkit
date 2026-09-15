@@ -149,6 +149,8 @@ def inject_copy(injector, code_text, rom, destination):
 
 
 def test_command(args):
+    if not args.skip_mupen and not args.mupen:
+        raise ValueError("--mupen is required unless --skip-mupen is used")
     rom = Path(args.rom).expanduser().resolve()
     code_text = read_code(args.code)
     valid, message, malformed = validate_code_text(code_text, args.game)
@@ -178,9 +180,14 @@ def test_command(args):
         result["injection"]["note"] = "GSInject was not found; original ROM was preserved."
 
     boot_rom = patched if result["injection"].get("injected") else rom
-    result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log)
-    result["mupen"]["gameplay_verified"] = False
+    if args.skip_mupen:
+        result["mupen"] = {"skipped": True, "gameplay_verified": False}
+    else:
+        result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log)
+        result["mupen"]["gameplay_verified"] = False
     output(result, args.pretty)
+    if args.skip_mupen:
+        return 0
     if not result["injection"].get("injected"):
         return 4
     return 0 if result["mupen"]["header_parsed"] else 3
@@ -219,10 +226,11 @@ def parser():
     test.add_argument("rom", type=Path)
     test.add_argument("--game", required=True, choices=("mp1", "mp2", "mp3"))
     test.add_argument("--code", required=True, type=Path)
-    test.add_argument("--mupen", required=True, type=Path)
+    test.add_argument("--mupen", type=Path)
     test.add_argument("--output-dir", default="test-results", type=Path)
     test.add_argument("--timeout", type=float, default=8)
     test.add_argument("--log", type=Path)
+    test.add_argument("--skip-mupen", action="store_true")
     test.add_argument("--pretty", action="store_true")
     test.set_defaults(handler=test_command)
     return parser
