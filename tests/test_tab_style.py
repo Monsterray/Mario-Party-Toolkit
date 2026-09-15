@@ -70,6 +70,11 @@ class TabStyleTests(unittest.TestCase):
         self.assertGreaterEqual(tab_bar.tabRect(0).x(), 0)
         self.assertGreaterEqual(tab_bar.tabRect(0).width(), 200)
 
+        # Theme refreshes can replace the stylesheet after the first layout.
+        tab_widget.setStyleSheet(pages.get_tab_stylesheet())
+        self.app.processEvents()
+        self.assertIn("alignment: left", tab_widget.styleSheet())
+
 
 if __name__ == "__main__":
     unittest.main()

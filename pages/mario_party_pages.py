@@ -11,8 +11,9 @@
 # ============================================
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QTabBar, QSizePolicy
-from PyQt5.QtCore import QTimer, Qt
 import re
+
+from PyQt5.QtCore import QEvent, QTimer, Qt
 from qfluentwidgets import BodyLabel
 
 from pages.game_tabs.coins_global_tab import CoinsTab
@@ -52,6 +53,12 @@ class TextSizedTabBar(QTabBar):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         QTimer.singleShot(0, self._update_alignment)
+
+    def changeEvent(self, event):
+        super().changeEvent(event)
+        if event.type() in (QEvent.StyleChange, QEvent.FontChange):
+            self._tab_alignment = None
+            QTimer.singleShot(0, self._update_alignment)
 
     def _update_alignment(self):
         """Center tabs when they fit; otherwise keep them in the scroll area."""
