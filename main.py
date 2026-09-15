@@ -5,6 +5,7 @@
 # License: MIT
 # ============================================
 
+import os
 import sys
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon, QFontDatabase
