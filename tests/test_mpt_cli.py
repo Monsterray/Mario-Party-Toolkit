@@ -42,6 +42,13 @@ class MptCliTests(unittest.TestCase):
         self.assertIn("Audio-SDL[RESAMPLE]=src-linear", command)
         self.assertIn("Audio-SDL[AUDIO_SYNC]=False", command)
 
+    def test_bundled_mupen_uses_source_directory_for_relative_assets(self):
+        executable = "/tools/mupen64plus-2.6.0/mupen64plus.app/Contents/MacOS/mupen64plus"
+        self.assertEqual(
+            mpt_cli.mupen_workdir(executable),
+            Path("/tools/mupen64plus-2.6.0"),
+        )
+
     def test_main_reports_missing_rom_as_json_error(self):
         with patch("sys.stderr.write"):
             result = mpt_cli.main(["inspect-rom", "/missing.z64"])

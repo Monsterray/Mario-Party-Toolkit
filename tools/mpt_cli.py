@@ -89,6 +89,14 @@ def generate_command(args):
     return 0
 
 
+def mupen_workdir(executable):
+    """Return the bundled Mupen source directory needed for relative assets."""
+    path = Path(executable).expanduser()
+    if path.parent.name == "MacOS" and path.parent.parent.parent.name == "mupen64plus.app":
+        return path.parents[3]
+    return None
+
+
 def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=()):
     command = [str(executable)]
     command.extend(["--gfx", gfx or "mupen64plus-video-glide64mk2"])
@@ -96,7 +104,13 @@ def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=()):
         command.extend(["--set", setting])
     command.extend(["--windowed", "--noosd", "--nosaveoptions", str(rom)])
     try:
-        completed = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
+        completed = subprocess.run(
+            command,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=mupen_workdir(executable),
+        )
         timed_out = False
     except subprocess.TimeoutExpired as error:
         completed = error
