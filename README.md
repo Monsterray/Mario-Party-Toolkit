@@ -1,38 +1,14 @@
 # Mario Party Toolkit
 
-Mario Party Toolkit is a PyQt5 desktop application for generating gameplay-modification codes for Mario Party 1–9 and Mario Party DS.
+Mario Party Toolkit generates gameplay-modification codes for Mario Party 1–9 and Mario Party DS. It supports N64 GameShark-style codes, GameCube/Wii Gecko-style codes, and platform-specific packaging with PyInstaller.
 
-## Features
+Use images dumped from games you own. Keep the original image unchanged and test generated output on a copy.
 
-- Coin, star, item, shop, minigame, handicap, and board-specific modifiers
-- N64 GameShark-style and GameCube/Wii Gecko-style code generation
-- Code injection interface for supported ROM and disc-image workflows
-- Light and dark themes using PyQt-Fluent-Widgets
-- Windows, macOS, and Linux application builds with PyInstaller
+## Setup
 
-Use game images dumped from copies you own. Keep an unmodified backup and apply generated codes to a working copy.
+Requirements: Python 3.10 or newer on macOS, Windows, or Linux.
 
-## Requirements
-
-- Python 3.10 or newer
-- A working `python3` command
-- macOS, Windows, or Linux
-
-Python packages are listed in `requirements.txt` and should be installed inside a virtual environment.
-
-## macOS setup
-
-From Terminal, open the project directory and run:
-
-```bash
-cd /path/to/Mario-Party-Toolkit
-./install_macos_deps.sh
-./mariovenv/bin/python main.py
-```
-
-The setup script creates `mariovenv` and installs all Python dependencies into it. It does not modify the Homebrew or system Python installation.
-
-To perform the same setup manually:
+Create a virtual environment, install dependencies, and run the application with that environment’s Python:
 
 ```bash
 python3 -m venv mariovenv
@@ -41,92 +17,80 @@ python3 -m venv mariovenv
 ./mariovenv/bin/python main.py
 ```
 
-If `python3` is unavailable, install a current Python release from [python.org](https://www.python.org/downloads/macos/) or Homebrew, then repeat the commands above.
+On Windows, use `python` and `mariovenv\Scripts\python.exe` instead. macOS users can run `./install_macos_deps.sh`, which performs the same setup without changing the system Python installation.
 
-## Windows and Linux setup
+## Build
 
-Create a virtual environment, activate it using the platform's normal command, and install the requirements:
-
-```bash
-python -m venv mariovenv
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python main.py
-```
-
-When the environment is not activated, invoke its Python executable directly as shown in the macOS example.
-
-## Building
-
-### macOS
+Run the build with the virtual environment’s Python:
 
 ```bash
-./build-macos.sh
+./mariovenv/bin/python build.py
 ```
 
-The build outputs are:
+On macOS, `./build-macos.sh` is equivalent when `mariovenv` already exists. Builds are written to `dist/`; the macOS build also creates `dist/MarioPartyToolkit.app`.
 
-- `dist/MarioPartyToolkit`
-- `dist/MarioPartyToolkit.app`
-
-The standalone executable can be launched from Terminal when diagnosing startup errors:
+For packaged-app diagnosis, run the standalone executable from Terminal:
 
 ```bash
 ./dist/MarioPartyToolkit
 ```
 
-### Any supported platform
+## Injector backends
 
-Run the build using the virtual environment's Python:
+The injector uses these tools:
+
+| Input | Backend | Current status |
+|---|---|---|
+| N64 `.z64` | `GSInject` | Windows binary bundled; no verified macOS/Linux port yet |
+| ISO/WBFS | `wit` | Supported when a native executable is installed |
+| GameCube/Wii DOL | GeckoLoader | Windows binary bundled; official Python CLI supported on macOS/Linux |
+
+On macOS/Linux, tools are searched in this order:
+
+1. The matching `MPT_GSINJECT`, `MPT_GECKOLOADER`, or `MPT_WIT` environment variable.
+2. Bundled platform dependencies.
+3. `~/Tools/mario-party-rom-lab/bin/`.
+4. `PATH` (Unix only).
+5. `~/Tools/mario-party-rom-lab/source/GeckoLoader/GeckoLoader.py` for GeckoLoader on Unix.
+
+Install GeckoLoader’s optional runtime packages when using its source checkout:
 
 ```bash
-python build.py
+./mariovenv/bin/python -m pip install -r requirements-injector.txt
 ```
 
-`build.py` resolves assets relative to the project directory, includes `assets/` and `dependencies/`, and uses the active Python interpreter's PyInstaller installation.
+WIT handles both ISO and WBFS extraction/rebuilds. Do not copy Windows `.exe` files into a Unix dependency directory. If a required tool is missing, the injector reports the tool name and expected configuration.
 
-## macOS troubleshooting
+## ROM validation
 
-### `ModuleNotFoundError: PyQt5`
+N64 injection accepts big-endian `.z64` files and checks explicit `MP1`, `MP2`, or `MP3` labels in generated codes. For PartyPlanner64-supported NTSC-U base ROMs, MPT also recognizes these published MD5 identities:
 
-Install the requirements with the same virtual-environment Python used for the build:
+| Game | MD5 |
+|---|---|
+| Mario Party | `8BC2712139FBF0C56C8EA835802C52DC` |
+| Mario Party 2 | `04840612A35ECE222AFDB2DFBF926409` |
+| Mario Party 3 | `76A8BBC81BC2060EC99C9645867237CC` |
 
-```bash
-./mariovenv/bin/python -m pip install -r requirements.txt
-```
-
-### `ModuleNotFoundError: tkinter`
-
-Current versions of the toolkit use Qt file dialogs and do not require Tk. Pull the latest source and rebuild; installing Tk should not be necessary.
-
-### Missing icon or assets
-
-Build from the current source using `build.py` or `build-macos.sh`. Both scripts resolve absolute asset paths and bundle the complete `assets/` directory.
-
-### Inspecting a packaged startup failure
-
-Run `./dist/MarioPartyToolkit` in Terminal and copy the complete traceback. Running the executable directly is more useful for diagnosis than double-clicking the `.app` bundle.
-
-### macOS injection dependencies
-
-The macOS injector uses an isolated temporary workspace and reports the exact helper that is missing. The repository currently ships the Windows helpers; N64/GameCube/Wii injection on macOS requires compatible Darwin builds of `GSInject`, `GeckoLoader`, and the disc-image tools. Code generation and ROM inspection work without those helpers. Do not copy the Windows `.exe` files into `dependencies/darwin`; they are not macOS executables.
-
-Before injecting, verify the selected N64 file is a big-endian `.z64` image. For Mario Party 1–3, generated code is checked against the game label and the PP64-supported base-ROM identity when the original base hash is still present. PP64-edited ROMs are treated as derivatives and should be tested in an emulator before sharing.
+Edited PP64 ROMs will not retain the base hash. They are treated as derivatives and must be tested in an emulator before distribution.
 
 ## PartyPlanner64 workflow
 
-[PartyPlanner64](https://github.com/PartyPlanner64/PartyPlanner64) is the board editor for the NTSC-U Mario Party 1–3 base ROMs. Use it to create or edit a board, save the resulting user-owned ROM, then use MPT to inspect the ROM, generate matching codes, and launch a tested copy in an N64 emulator. Both projects remain separate; MPT does not bundle ROMs, extracted assets, or PP64’s private editor data.
+[PartyPlanner64](https://github.com/PartyPlanner64/PartyPlanner64) edits boards for NTSC-U Mario Party 1–3. Use PP64 to create the board, save the user-owned ROM, then use MPT to validate the target, generate compatible codes, and test a copy in an N64 emulator. PP64 requires Expansion Pak-equivalent 8 MB RAM; see the [integration research note](docs/research/partyplanner64-integration.md) for identities, symbols, events, and interoperability boundaries.
 
-PP64 requires the Expansion Pak/8 MB RAM in the emulator. Its published base-ROM identities and the validation flow are documented in [the integration research note](docs/research/partyplanner64-integration.md).
+MPT does not bundle ROMs, extracted game assets, or PP64’s private editor data.
+
+## CI
+
+GitHub Actions runs unit tests, Python compilation, and a PyInstaller build on Ubuntu, macOS, and Windows. The workflow is [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Project structure
 
 ```text
-codes/          Generated-code templates for each game
-events/         UI event and conversion logic
-pages/          Application pages and the injector interface
-components/     Main window and navigation components
-utils/          Resource, scaling, and randomization helpers
+codes/          Code templates
+events/         UI and conversion logic
+pages/          Application pages, including the injector
+components/     Main window and navigation
+utils/          Resource, scaling, validation, and injector helpers
 assets/         Icons, logos, and UI images
 dependencies/   External injection helpers
 build.py        Cross-platform PyInstaller build
@@ -134,11 +98,7 @@ build.py        Cross-platform PyInstaller build
 
 ## Contributing
 
-1. Fork the repository.
-2. Create a focused branch.
-3. Run the application from a clean virtual environment.
-4. Build and launch the packaged executable for your platform.
-5. Submit a pull request describing the platform and Python version tested.
+Use a focused branch, run the tests and packaged build on your platform, and describe the platform and Python version in the pull request.
 
 ## License
 

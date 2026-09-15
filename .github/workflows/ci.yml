@@ -4,42 +4,46 @@ on:
   push:
   pull_request:
 
+permissions:
+  contents: read
+
 jobs:
-  build-win32:
-    name: "Windows Build"
-    runs-on: windows-latest
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ['3.11']
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
-    - name: Install PIP Modules
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python }}
+        cache: pip
+
+    - name: Install dependencies
       run: python -m pip install -r requirements.txt
 
-    - name: Build Project (Dynamic build)
-      run: pyinstaller -w --onefile .\main.py --add-data "assets/eventTags/*;assets/eventTags/" --add-data "assets/icons/*;assets/icons/" --add-data "assets/items/*;assets/items/" --add-data "assets/logos/*;assets/logos/" --add-data "assets/operation/*;assets/operation/" --add-data "dependencies/win32/*;dependencies/win32/" --add-data "dependencies/bin/*;dependencies/win32/bin/"  --name="Mario Party Toolkit" --icon="assets/icons/diceBlock.ico"
+    - name: Install optional injector dependencies
+      run: python -m pip install -r requirements-injector.txt
+
+    - name: Run unit tests
+      run: python -m unittest discover -s tests -v
+
+    - name: Compile Python modules
+      run: python -m compileall -q .
+
+    - name: Build packaged application
+      run: python build.py
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: MarioPartyToolkit-win32
-        path: D:\a\Mario-Party-Toolkit\Mario-Party-Toolkit\dist
-
-  build-macos:
-    name: "macOS Build"
-    runs-on: macos-14
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Install macOS dependencies
-      run: ./install_macos_deps.sh
-
-    - name: Build Project
-      run: ./build-macos.sh
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: MarioPartyToolkit-macos
+        name: MarioPartyToolkit-${{ matrix.os }}
         path: dist/
-
+        if-no-files-found: error
