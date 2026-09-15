@@ -100,11 +100,30 @@ The MP3 generator expects `switch` as one hexadecimal digit. For example, use `A
 
 For a fast injection-only matrix, omit `--mupen` and add `--skip-mupen`; this returns success after validation and injection without launching an emulator.
 
-For the bundled Mupen build on this Intel Mac, use the Rice video plugin. It reaches the Radeon OpenGL context reliably; the default plugin can open a black window:
+For the bundled Mupen build on this Intel Mac, use Glide64mk2. It renders MP3 correctly on the tested Intel/Radeon system; Rice can open a black window. The CLI now selects Glide64mk2 by default:
 
 ```bash
 ./mariovenv/bin/python tools/mpt_cli.py run-mupen /path/to/test.z64 \
-  --mupen "$MUPEN" --gfx mupen64plus-video-rice --timeout 30 --pretty
+  --mupen "$MUPEN" --timeout 30 --pretty
+```
+
+Mupen settings are passed with repeatable `--set` options. If gameplay or sound runs below real time, first try the lower-CPU audio resampler:
+
+```bash
+./mariovenv/bin/python tools/mpt_cli.py run-mupen /path/to/test.z64 \
+  --mupen "$MUPEN" \
+  --set 'Audio-SDL[RESAMPLE]=src-linear' \
+  --timeout 30 --pretty
+```
+
+If that does not restore normal speed, use this as a diagnostic; it may allow video to run at full speed while audio crackles or drifts:
+
+```bash
+./mariovenv/bin/python tools/mpt_cli.py run-mupen /path/to/test.z64 \
+  --mupen "$MUPEN" \
+  --set 'Audio-SDL[RESAMPLE]=src-linear' \
+  --set 'Audio-SDL[AUDIO_SYNC]=False' \
+  --timeout 30 --pretty
 ```
 
 ## Injector backends

@@ -30,6 +30,18 @@ class MptCliTests(unittest.TestCase):
             mpt_cli.run_process("mupen64plus", "game.z64", 1, gfx="mupen64plus-video-rice")
         self.assertIn("mupen64plus-video-rice", run.call_args.args[0])
 
+    def test_run_process_defaults_to_working_glide_plugin_and_passes_settings(self):
+        completed = type("Completed", (), {"stdout": "", "stderr": "", "returncode": 0})()
+        with patch("tools.mpt_cli.subprocess.run", return_value=completed) as run:
+            mpt_cli.run_process(
+                "mupen64plus", "game.z64", 1,
+                settings=["Audio-SDL[RESAMPLE]=src-linear", "Audio-SDL[AUDIO_SYNC]=False"],
+            )
+        command = run.call_args.args[0]
+        self.assertIn("mupen64plus-video-glide64mk2", command)
+        self.assertIn("Audio-SDL[RESAMPLE]=src-linear", command)
+        self.assertIn("Audio-SDL[AUDIO_SYNC]=False", command)
+
     def test_main_reports_missing_rom_as_json_error(self):
         with patch("sys.stderr.write"):
             result = mpt_cli.main(["inspect-rom", "/missing.z64"])

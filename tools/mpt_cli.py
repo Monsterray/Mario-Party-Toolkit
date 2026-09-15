@@ -89,10 +89,11 @@ def generate_command(args):
     return 0
 
 
-def run_process(executable, rom, timeout, log_path=None, gfx=None):
+def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=()):
     command = [str(executable)]
-    if gfx:
-        command.extend(["--gfx", gfx])
+    command.extend(["--gfx", gfx or "mupen64plus-video-glide64mk2"])
+    for setting in settings:
+        command.extend(["--set", setting])
     command.extend(["--windowed", "--noosd", "--nosaveoptions", str(rom)])
     try:
         completed = subprocess.run(command, capture_output=True, text=True, timeout=timeout)
@@ -118,7 +119,7 @@ def run_process(executable, rom, timeout, log_path=None, gfx=None):
 
 
 def run_mupen_command(args):
-    result = run_process(args.mupen, args.rom, args.timeout, args.log, args.gfx)
+    result = run_process(args.mupen, args.rom, args.timeout, args.log, args.gfx, args.setting)
     output(result, args.pretty)
     return 0 if result["header_parsed"] else 3
 
@@ -186,7 +187,7 @@ def test_command(args):
     if args.skip_mupen:
         result["mupen"] = {"skipped": True, "gameplay_verified": False}
     else:
-        result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log, args.gfx)
+        result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log, args.gfx, args.setting)
         result["mupen"]["gameplay_verified"] = False
     output(result, args.pretty)
     if args.skip_mupen:
@@ -222,7 +223,8 @@ def parser():
     mupen.add_argument("--mupen", required=True, type=Path)
     mupen.add_argument("--timeout", type=float, default=8)
     mupen.add_argument("--log", type=Path)
-    mupen.add_argument("--gfx", help="Mupen video plugin, e.g. mupen64plus-video-rice")
+    mupen.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
+    mupen.add_argument("--set", dest="setting", action="append", default=[], help="Mupen setting, repeatable; e.g. Audio-SDL[RESAMPLE]=src-linear")
     mupen.add_argument("--pretty", action="store_true")
     mupen.set_defaults(handler=run_mupen_command)
 
@@ -234,7 +236,8 @@ def parser():
     test.add_argument("--output-dir", default="test-results", type=Path)
     test.add_argument("--timeout", type=float, default=8)
     test.add_argument("--log", type=Path)
-    test.add_argument("--gfx", help="Mupen video plugin, e.g. mupen64plus-video-rice")
+    test.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
+    test.add_argument("--set", dest="setting", action="append", default=[], help="Mupen setting, repeatable; e.g. Audio-SDL[RESAMPLE]=src-linear")
     test.add_argument("--skip-mupen", action="store_true")
     test.add_argument("--pretty", action="store_true")
     test.set_defaults(handler=test_command)
