@@ -4,30 +4,43 @@ Mario Party Toolkit generates gameplay-modification codes for Mario Party 1–9 
 
 Use images dumped from games you own. Keep the original image unchanged and test generated output on a copy.
 
-## Setup
+## Setup and build by operating system
 
-Requirements: Python 3.10 or newer on macOS, Windows, or Linux.
+Requirements: Python 3.10 or newer. Keep the virtual environment in the project directory; it is ignored by Git.
 
-Create a virtual environment, install dependencies, and run the application with that environment’s Python:
+### macOS
+
+```bash
+./install_macos_deps.sh
+./mariovenv/bin/python main.py
+./build-macos.sh
+```
+
+The build creates `dist/MarioPartyToolkit` and `dist/MarioPartyToolkit.app`. The setup script does not modify the system Python installation.
+
+### Windows
+
+```powershell
+python -m venv mariovenv
+mariovenv\Scripts\python.exe -m pip install --upgrade pip
+mariovenv\Scripts\python.exe -m pip install -r requirements.txt
+mariovenv\Scripts\python.exe main.py
+mariovenv\Scripts\python.exe build.py
+```
+
+The build creates the packaged executable in `dist/`.
+
+### Linux
 
 ```bash
 python3 -m venv mariovenv
 ./mariovenv/bin/python -m pip install --upgrade pip
 ./mariovenv/bin/python -m pip install -r requirements.txt
 ./mariovenv/bin/python main.py
-```
-
-On Windows, use `python` and `mariovenv\Scripts\python.exe` instead. macOS users can run `./install_macos_deps.sh`, which performs the same setup without changing the system Python installation.
-
-## Build
-
-Run the build with the virtual environment’s Python:
-
-```bash
 ./mariovenv/bin/python build.py
 ```
 
-On macOS, `./build-macos.sh` is equivalent when `mariovenv` already exists. Builds are written to `dist/`; the macOS build also creates `dist/MarioPartyToolkit.app`.
+The build creates the packaged executable in `dist/`.
 
 For packaged-app diagnosis, run the standalone executable from Terminal:
 
@@ -81,7 +94,7 @@ MPT does not bundle ROMs, extracted game assets, or PP64’s private editor data
 
 ## CI
 
-GitHub Actions runs unit tests, Python compilation, and a PyInstaller build on Ubuntu, macOS, and Windows. The workflow is [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+GitHub Actions runs unit tests, Python compilation, and a PyInstaller build on Ubuntu, macOS, and Windows. It uses Node.js 24-based official actions to avoid the deprecated Node.js 20 runtime. The workflow is [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 
 ## Project structure
 

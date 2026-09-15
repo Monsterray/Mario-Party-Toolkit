@@ -239,7 +239,7 @@ D00FD375 00{itemHex1}
 
 def getStarReplaceTwo1(amount, amountDec):
     return f'''
-MP5 - Replace Minigame Star with {amountDec}
+MP2 - Replace Minigame Star with {amountDec}
 D10FA63E 0052
 80103F04 0080
 D10FA63E 0052
@@ -252,7 +252,7 @@ D10FA63E 0052
 
 def getStarReplaceTwo2(amount, amountDec):
     return f'''
-MP5 - Replace Coin Star with {amountDec}
+MP2 - Replace Coin Star with {amountDec}
 D10FA63E 0052
 80104314 0080
 D10FA63E 0052
@@ -265,7 +265,7 @@ D10FA63E 0052
 
 def getStarReplaceTwo3(amount, amountDec):
     return f'''
-MP5 - Replace Happening Star with {amountDec}
+MP2 - Replace Happening Star with {amountDec}
 D10FA63E 0052
 80104724 0080
 D10FA63E 0052
