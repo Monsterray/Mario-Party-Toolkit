@@ -6,7 +6,6 @@
 # ============================================
 
 import sys
-import os
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon, QFontDatabase
 from PyQt5.QtCore import Qt
@@ -30,13 +29,8 @@ def main():
     
     # Now calculate auto-scale based on display (after QApplication is created)
     scale_factor = ScaleManager.calculate_auto_scale()
-    
-    # Apply scaling by setting it in environment for future reference
-    if scale_factor != 1.0:
-        os.environ['QT_SCALE_FACTOR'] = str(scale_factor)
-        print(f"✓ Auto scale factor: {scale_factor} ({int(scale_factor * 100)}%)")
-    else:
-        print(f"✓ Using default scale (100%)")
+    ScaleManager.set_scale_factor(scale_factor)
+    print(f"✓ UI scale: {int(scale_factor * 100)}%")
     
     # Set application-wide icon
     icon_path = ResourceManager.get_resource_path("assets/icons/diceBlock.png")
@@ -62,6 +56,7 @@ def main():
     
     # Create and show the main window
     window = MarioPartyToolkit()
+    ScaleManager.scale_widget_tree(window, scale_factor)
     window.show()
     
     sys.exit(app.exec_())

@@ -45,8 +45,9 @@ class MainWindow(FluentWindow):
         screen = QApplication.primaryScreen()
         screen_geometry = screen.availableGeometry()
         
-        # Set minimum size
-        self.setMinimumSize(1200, 800)
+        # Keep the window resizable on smaller displays. Child fixed sizes are
+        # scaled once after the complete widget tree is constructed.
+        self.setMinimumSize(800, 500)
         
         # Fit to display - use available screen size with small margins
         margin = 200  # Leave some margin from screen edges

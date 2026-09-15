@@ -5,7 +5,9 @@
 # License: MIT
 # ============================================
 
-from PyQt5.QtCore import QSettings
+import re
+
+from PyQt5.QtCore import QObject
 from PyQt5.QtWidgets import QApplication
 
 
@@ -17,6 +19,7 @@ class ScaleManager:
     BASE_HEIGHT = 1080
     
     DEFAULT_SCALE = 1.0
+    _scale_factor = None
     
     @staticmethod
     def calculate_auto_scale():
@@ -40,8 +43,9 @@ class ScaleManager:
                     auto_scale = min(width_ratio, height_ratio)
                     auto_scale = round(auto_scale * 4) / 4  # Round to nearest 0.25
                     
-                    # Clamp between 0.75 and 3.0
-                    auto_scale = max(0.75, min(3.0, auto_scale))
+                    # Keep small displays usable; widget dimensions are scaled
+                    # after construction so this applies consistently.
+                    auto_scale = max(0.5, min(3.0, auto_scale))
                     
                     print(f"✓ Auto-calculated scale: {auto_scale} (Display: {screen_width}x{screen_height})")
                     return auto_scale
@@ -52,22 +56,53 @@ class ScaleManager:
     
     @staticmethod
     def get_scale_factor():
-        """Get the current scale factor - auto-calculated or from settings cache"""
-        settings = QSettings("Mario Party Toolkit", "Settings")
-        
-        # Check if we have a cached auto-scale value
-        cached_scale = settings.value("auto_scale_factor", None)
-        
-        if cached_scale is not None:
-            try:
-                return float(cached_scale)
-            except (ValueError, TypeError):
-                pass
-        
-        # Calculate and cache the auto scale
-        auto_scale = ScaleManager.calculate_auto_scale()
-        settings.setValue("auto_scale_factor", auto_scale)
-        return auto_scale
+        """Return this process's scale; never reuse a stale display value."""
+        if ScaleManager._scale_factor is None:
+            ScaleManager._scale_factor = ScaleManager.calculate_auto_scale()
+        return ScaleManager._scale_factor
+
+    @staticmethod
+    def set_scale_factor(scale_factor):
+        ScaleManager._scale_factor = max(0.5, min(3.0, float(scale_factor)))
+
+    @staticmethod
+    def scale(value, scale_factor=None):
+        scale_factor = scale_factor or ScaleManager.get_scale_factor()
+        return max(1, round(float(value) * scale_factor)) if value else 0
+
+    @staticmethod
+    def scale_stylesheet(stylesheet, scale_factor=None):
+        """Scale literal px values in local stylesheets exactly once."""
+        scale_factor = scale_factor or ScaleManager.get_scale_factor()
+
+        def replace(match):
+            value = float(match.group(1))
+            scaled = round(value * scale_factor)
+            return f"{max(1, scaled) if value else 0}px"
+
+        return re.sub(r"(?<![A-Za-z])([0-9]+(?:\.[0-9]+)?)px", replace, stylesheet)
+
+    @staticmethod
+    def scale_widget_tree(root, scale_factor=None):
+        """Scale finite widget bounds and local stylesheets once."""
+        scale_factor = scale_factor or ScaleManager.get_scale_factor()
+        for widget in [root, *root.findChildren(QObject)]:
+            if not hasattr(widget, "property") or widget.property("mptScaled"):
+                continue
+            if hasattr(widget, "minimumWidth"):
+                minimum = widget.minimumSize()
+                maximum = widget.maximumSize()
+                if minimum.width() or minimum.height():
+                    widget.setMinimumSize(ScaleManager.scale(minimum.width(), scale_factor), ScaleManager.scale(minimum.height(), scale_factor))
+                if maximum.width() < 16777215 or maximum.height() < 16777215:
+                    widget.setMaximumSize(
+                        ScaleManager.scale(maximum.width(), scale_factor) if maximum.width() < 16777215 else maximum.width(),
+                        ScaleManager.scale(maximum.height(), scale_factor) if maximum.height() < 16777215 else maximum.height(),
+                    )
+            stylesheet = widget.styleSheet() if hasattr(widget, "styleSheet") else ""
+            if stylesheet:
+                widget.setStyleSheet(ScaleManager.scale_stylesheet(stylesheet, scale_factor))
+            widget.setProperty("mptScaled", True)
     
     @staticmethod
     def get_scale_percentage():
@@ -80,5 +115,4 @@ class ScaleManager:
         """Get scaled font size"""
         if scale_factor is None:
             scale_factor = ScaleManager.get_scale_factor()
-        return int(base_size * scale_factor)
-
+        return max(1, round(base_size * scale_factor))
