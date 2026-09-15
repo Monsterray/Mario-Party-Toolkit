@@ -13,6 +13,19 @@ PartyPlanner64 (PP64) and MPT can complement one another without becoming one ap
 3. The shared contract should be a small, text-based manifest plus user-selected patch files—not extracted ROM data or bundled game assets.
 4. Every generated code must be tied to a specific title, region, revision, byte order, and base-ROM hash. “Mario Party 1” alone is not enough.
 
+## Current MPT implementation
+
+The repository now provides the first validation and portability layer:
+
+- `utils/rom_identity.py` recognizes N64 byte order, header fields, MD5, and SHA-256.
+- `utils/code_validation.py` detects explicit MP1/MP2/MP3 labels and rejects mixed targets.
+- The injector uses a per-run temporary directory and platform-independent paths.
+- WIT is used for ISO/WBFS extraction and rebuilds.
+- GeckoLoader can run from its official Python CLI checkout on macOS/Linux.
+- GitHub Actions tests and packages the application on Ubuntu, macOS, and Windows.
+
+N64 `GSInject` remains unresolved. MPT does not claim compatibility with unrelated SM64-, Mario Kart-, or emulator-specific injectors.
+
 ## What PP64 already provides
 
 The main repository says PP64 creates/imports custom boards into Mario Party N64 ROMs. It supports only the NTSC-USA Mario Party 1, 2, and 3 base files and publishes the expected MD5 for each:
@@ -207,4 +220,3 @@ MPT should not commit:
 - [PartyPlanner64 events](https://github.com/PartyPlanner64/events)
 - [PartyPlanner64 MP3 decompilation](https://github.com/PartyPlanner64/mp3)
 - [Mario Party 1 splitter/layout configuration](https://gist.github.com/PartyPlanner64/93952bc7e1e403fda023d17ecb74bd2a)
-

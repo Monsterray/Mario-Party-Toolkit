@@ -11,6 +11,7 @@ from qfluentwidgets import SubtitleLabel, BodyLabel, LineEdit, PushButton, TextE
 from functions import createDialog, fetchResource
 from utils.code_validation import code_targets, validate_code_target
 from utils.rom_identity import inspect_n64
+from utils.injector_tools import resolve_tool
 import os
 import sys
 import subprocess
@@ -62,15 +63,7 @@ class InjectionWorker(QThread):
 
     def tool(self, name):
         """Resolve a bundled helper and report a useful macOS setup error."""
-        platform_dir = "win32" if sys.platform == "win32" else "darwin"
-        suffix = ".exe" if sys.platform == "win32" else ""
-        path = Path(fetchResource(f"dependencies/{platform_dir}/{name}{suffix}"))
-        if not path.is_file():
-            raise FileNotFoundError(
-                f"Required injection tool is not installed: {path}. "
-                "Install the macOS injection dependencies before using this file type."
-            )
-        return str(path)
+        return resolve_tool(name, fetchResource)
     
     def is_file_greater_than_4gb(self, file_path):
         file_size_bytes = os.path.getsize(file_path)
@@ -84,7 +77,7 @@ class InjectionWorker(QThread):
     
     def handle_wbfs_iso(self, iso_path, gameName, work, codes_path):
         rom_dir = work / "tmpROM"
-        subprocess.run([self.tool("wit"), "extract", iso_path, f"{rom_dir}/"], check=True)
+        subprocess.run([*self.tool("wit"), "extract", iso_path, f"{rom_dir}/"], check=True)
         
         folders = [item for item in rom_dir.iterdir() if item.is_dir()]
         folder_name = folders[0]
@@ -92,13 +85,13 @@ class InjectionWorker(QThread):
         folder_path_raw = rom_dir / folder_name.name
         dol_dir = work / "tmpDOL"
 
-        subprocess.run([self.tool("GeckoLoader"), "--hooktype=GX", "--optimize", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
+        subprocess.run([*self.tool("GeckoLoader"), "--hooktype=GX", "--optimize", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
         
         folder_path.unlink()
         shutil.move(str(dol_dir / "main.dol"), str(folder_path))
         
         output = work / "game.wbfs"
-        subprocess.run([self.tool("wit"), "copy", str(folder_path_raw), "--dest=" + str(output)], check=True)
+        subprocess.run([*self.tool("wit"), "copy", str(folder_path_raw), "--dest=" + str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".wbfs", gameName[:-4] + " (Modded).wbfs", "WBFS Files (*.wbfs)")
@@ -122,7 +115,7 @@ class InjectionWorker(QThread):
                     f"{next(iter(targets)).upper()}."
                 )
         output = work / "game.z64"
-        subprocess.run([self.tool("GSInject"), str(codes_path), iso_path, str(output)], check=True)
+        subprocess.run([*self.tool("GSInject"), str(codes_path), iso_path, str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".z64", gameName[:-4] + " (Modded).z64", "Z64 Files (*.z64)")
@@ -135,7 +128,7 @@ class InjectionWorker(QThread):
 
     def handle_regular_iso(self, iso_path, gameName, work, codes_path):
         rom_dir = work / "tmpROM"
-        subprocess.run([self.tool("pyisotools"), iso_path, "E", f"--dest={rom_dir}/"], check=True)
+        subprocess.run([*self.tool("wit"), "extract", iso_path, f"{rom_dir}/"], check=True)
         
         folders = [item for item in rom_dir.iterdir() if item.is_dir()]
         folder_name = folders[0]
@@ -143,13 +136,13 @@ class InjectionWorker(QThread):
         folder_path_raw = rom_dir / folder_name.name
         dol_dir = work / "tmpDOL"
         
-        subprocess.run([self.tool("GeckoLoader"), "--hooktype=GX", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
+        subprocess.run([*self.tool("GeckoLoader"), "--hooktype=GX", str(folder_path), str(codes_path), "--dest=" + str(dol_dir)], check=True)
         
         folder_path.unlink()
         shutil.move(str(dol_dir / "main.dol"), str(folder_path))
         
         output = work / "game.iso"
-        subprocess.run([self.tool("pyisotools"), str(folder_path_raw), "B", "--dest=" + str(output)], check=True)
+        subprocess.run([*self.tool("wit"), "copy", str(folder_path_raw), "--dest=" + str(output)], check=True)
         
         # Request save file dialog from main thread
         self.save_file_requested.emit(".iso", gameName[:-4] + " (Modded).iso", "ISO Files (*.iso)")
