@@ -100,6 +100,13 @@ The MP3 generator expects `switch` as one hexadecimal digit. For example, use `A
 
 For a fast injection-only matrix, omit `--mupen` and add `--skip-mupen`; this returns success after validation and injection without launching an emulator.
 
+For the bundled Mupen build on this Intel Mac, use the Rice video plugin. It reaches the Radeon OpenGL context reliably; the default plugin can open a black window:
+
+```bash
+./mariovenv/bin/python tools/mpt_cli.py run-mupen /path/to/test.z64 \
+  --mupen "$MUPEN" --gfx mupen64plus-video-rice --timeout 30 --pretty
+```
+
 ## Injector backends
 
 The injector uses these tools:

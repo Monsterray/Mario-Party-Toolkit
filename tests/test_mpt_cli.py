@@ -24,6 +24,12 @@ class MptCliTests(unittest.TestCase):
             self.assertTrue(result["header_parsed"])
             self.assertTrue(log.is_file())
 
+    def test_run_process_can_select_video_plugin(self):
+        completed = type("Completed", (), {"stdout": "Core: Imagetype: .z64 (native)\nCore: Country: USA\n", "stderr": "", "returncode": 0})()
+        with patch("tools.mpt_cli.subprocess.run", return_value=completed) as run:
+            mpt_cli.run_process("mupen64plus", "game.z64", 1, gfx="mupen64plus-video-rice")
+        self.assertIn("mupen64plus-video-rice", run.call_args.args[0])
+
     def test_main_reports_missing_rom_as_json_error(self):
         with patch("sys.stderr.write"):
             result = mpt_cli.main(["inspect-rom", "/missing.z64"])
