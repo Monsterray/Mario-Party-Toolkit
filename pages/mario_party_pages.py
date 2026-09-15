@@ -95,7 +95,7 @@ class MarioPartyPages:
                 padding: 0;
             }
             QTabWidget::tab-bar {
-                alignment: left;
+                alignment: center;
                 background: transparent;
                 border: none;
                 margin: 0;
@@ -110,7 +110,6 @@ class MarioPartyPages:
                 margin-right: 2px;
                 font-size: 15px;
                 font-weight: 500;
-                min-width: 100px;
                 min-height: 24px;
             }
             QTabBar::tab:selected {
