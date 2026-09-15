@@ -1,0 +1,17 @@
+[
+  {
+    "name": "PartyPlanner64",
+    "url": "https://github.com/PartyPlanner64/PartyPlanner64",
+    "scope": "Mario Party 1-3 board editing and ROM identity references"
+  },
+  {
+    "name": "PartyPlanner64 symbols",
+    "url": "https://github.com/PartyPlanner64/symbols",
+    "scope": "Mario Party 1-3 symbols and region-aware address references"
+  },
+  {
+    "name": "GeckoLoader",
+    "url": "https://github.com/JoshuaMKW/GeckoLoader",
+    "scope": "GameCube/Wii Gecko code loading and DOL patching"
+  }
+]

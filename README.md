@@ -72,6 +72,36 @@ ROM=/path/to/mario-party-1.z64
 The JSON report distinguishes ROM-header parsing from gameplay verification. Exit status `0` means the ROM was injected and Mupen parsed its header; `2` means code validation failed; `3` means Mupen did not parse a header; `4` means injection failed. Mupen may stop when its OpenGL context cannot be created; that is an emulator/display limitation, not proof that the ROM or code is wrong.
 When Mupen stops before parsing the header, gameplay remains unverified.
 
+For Mupen testing on macOS, `test-native-cheat` applies generated GameShark
+lines through Mupen's native cheat engine while leaving the base ROM unchanged.
+This is the preferred code-validation path while GSInject is being diagnosed:
+
+```bash
+./mariovenv/bin/python tools/mpt_cli.py generate-code \
+  codes.marioParty3.getBlueSpaceCodeThree 000A A 10 normal |
+./mariovenv/bin/python tools/mpt_cli.py test-native-cheat "$ROM" --game mp3 \
+  --code - --mupen "$MUPEN" --pretty
+```
+
+The JSON reports `cheat_activated: true` only when Mupen matched the ROM and
+activated code 0. It does not claim gameplay success; confirm the visible
+behavior in the emulator.
+
+Every headless run also emits a small observation record. `loaded` and
+`booted` are runner facts; `visibly_changed` and `behavior_confirmed` require
+manual inspection or a narrow oracle. Promote a saved report after checking
+the baseline and modified runs:
+
+```bash
+./mariovenv/bin/python tools/runner_result.py run.json \
+  --confirm visibly_changed --confirm behavior_confirmed \
+  --evidence "Observed the generated value change" \
+  --output verified-run.json
+```
+
+Reusable baseline/scenario descriptions are in `data/test-scenarios.json`.
+They intentionally contain no local ROM paths.
+
 ### Intel macOS GSInject
 
 The bundled macOS GSInject is arm64. On an Intel Mac, install an x86_64 build in the shared ROM-lab tools directory and select it explicitly:
@@ -106,6 +136,41 @@ For the bundled Mupen build on this Intel Mac, use Glide64mk2. It renders MP3 co
 ./mariovenv/bin/python tools/mpt_cli.py run-mupen /path/to/test.z64 \
   --mupen "$MUPEN" --timeout 30 --pretty
 ```
+
+### GameCube/Wii Gecko-code testing (MP4–9)
+
+GameCube codes use GeckoLoader and a rebuilt ISO. The reusable helper prints the
+exact code, extracts `main.dol`, patches it, rebuilds a separate ISO, and can
+launch Dolphin for manual testing:
+
+```bash
+./mariovenv/bin/python tools/test_gamecube_codes.py \
+  --game mp4 \
+  --iso "$HOME/Tools/mario-party-rom-lab/roms/Mario Party 4 [GMPE01]/game.iso" \
+  --function getBlueSpaceCodeFour 000A 10 \
+  --geckoloader "$HOME/Tools/mario-party-rom-lab/source/GeckoLoader/GeckoLoader.py" \
+  --wit "$HOME/Tools/mario-party-rom-lab/bin/wit" \
+  --output /private/tmp/mp4-blue.iso \
+  --dolphin "$HOME/Tools/mario-party-rom-lab/Dolphin-2606a.app/Contents/MacOS/Dolphin" \
+  --launch
+```
+
+Use the matching `marioParty5` through `marioParty9` generator and
+`--game` value for the other discs. Keep rebuilt images outside the repository.
+
+For Dolphin validation, use the native Gecko path instead of the rebuilt ISO:
+
+```bash
+./mariovenv/bin/python tools/test_dolphin_gecko.py \
+  --game mp4 \
+  --iso "$HOME/Tools/mario-party-rom-lab/roms/Mario Party 4 [GMPE01]/game.iso" \
+  --function getBlueSpaceCodeFour 000A 10 \
+  --dolphin "$HOME/Tools/mario-party-rom-lab/Dolphin-2606a.app/Contents/MacOS/Dolphin"
+```
+
+On the tested Dolphin build, the GeckoLoader-patched image crashes in its
+embedded handler at `0x81200D60`, while the same code works through Dolphin's
+native Gecko manager.
 
 Mupen settings are passed with repeatable `--set` options. If gameplay or sound runs below real time, first try the lower-CPU audio resampler:
 

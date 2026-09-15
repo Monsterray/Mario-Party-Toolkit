@@ -30,6 +30,21 @@ class MptCliTests(unittest.TestCase):
             mpt_cli.run_process("mupen64plus", "game.z64", 1, gfx="mupen64plus-video-rice")
         self.assertIn("mupen64plus-video-rice", run.call_args.args[0])
 
+    def test_run_process_passes_extra_options(self):
+        completed = type("Completed", (), {"stdout": "", "stderr": "", "returncode": 0})()
+        with patch("tools.mpt_cli.subprocess.run", return_value=completed) as run:
+            mpt_cli.run_process("mupen64plus", "game.z64", 1, extra=("--cheats", "0"))
+        self.assertIn("--cheats", run.call_args.args[0])
+
+    def test_native_cheat_file_uses_rom_crc_and_mario_party_cic(self):
+        with tempfile.TemporaryDirectory() as directory:
+            rom = Path(directory) / "game.z64"
+            rom.write_bytes(bytes(0x10) + bytes.fromhex("7C3829D96E8247CE") + bytes(0x20))
+            mpt_cli.native_cheat_file(rom, "MP3 test\n81000000 0001\n", directory, "mp3")
+            text = (Path(directory) / "mupencheat.txt").read_text(encoding="utf-8")
+        self.assertIn("crc 7C3829D9-6E8247CE-C:45", text)
+        self.assertIn("  81000000 0001", text)
+
     def test_run_process_defaults_to_working_glide_plugin_and_passes_settings(self):
         completed = type("Completed", (), {"stdout": "", "stderr": "", "returncode": 0})()
         with patch("tools.mpt_cli.subprocess.run", return_value=completed) as run:

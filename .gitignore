@@ -10,6 +10,7 @@ __pycache__/
 .DS_Store
 *.spec
 *.json
+!data/*.json
 tmp/
 
 # Test, coverage, and type-checker output

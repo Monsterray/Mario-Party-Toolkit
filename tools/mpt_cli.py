@@ -21,6 +21,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from utils.code_validation import validate_code_target
 from utils.rom_identity import inspect_n64, pp64_target_status
+from tools.runner_result import observation, status_for
 
 
 CODE_LINE = re.compile(r"^[0-9A-Fa-f]{8}\s+(?:[0-9A-Fa-f]{2}|[0-9A-Fa-f]{4})$")
@@ -97,11 +98,12 @@ def mupen_workdir(executable):
     return None
 
 
-def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=()):
+def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=(), extra=()):
     command = [str(executable)]
     command.extend(["--gfx", gfx or "mupen64plus-video-glide64mk2"])
     for setting in settings:
         command.extend(["--set", setting])
+    command.extend(extra)
     # Let Mupen use its tested macOS display mode; forcing --windowed can make
     # the bundled SDL/Glide stack abort during Cocoa window creation.
     command.extend(["--noosd", "--nosaveoptions", str(rom)])
@@ -138,6 +140,59 @@ def run_mupen_command(args):
     result = run_process(args.mupen, args.rom, args.timeout, args.log, args.gfx, args.setting)
     output(result, args.pretty)
     return 0 if result["header_parsed"] else 3
+
+
+def native_cheat_file(rom, code_text, directory, game):
+    """Write the small Mupen database needed to apply this code to this ROM."""
+    data = Path(rom).read_bytes()
+    crc1, crc2 = data[0x10:0x14].hex().upper(), data[0x14:0x18].hex().upper()
+    codes = []
+    for line in code_text.splitlines():
+        line = line.strip()
+        if CODE_LINE.fullmatch(line):
+            codes.append(line)
+    if not codes:
+        raise ValueError("No GameShark lines were found")
+    # Mario Party NTSC-U uses CIC 6102 (Mupen database suffix C:45).
+    # Keep this explicit: the suffix is part of Mupen's ROM match key.
+    cic = {"mp1": "45", "mp2": "45", "mp3": "45"}[game]
+    cheat = [f"crc {crc1}-{crc2}-C:{cic}", "gn MPT generated test", " cn Generated code"]
+    cheat.extend(f"  {line}" for line in codes)
+    Path(directory, "mupencheat.txt").write_text("\n".join(cheat) + "\n", encoding="utf-8")
+
+
+def native_cheat_command(args):
+    rom = Path(args.rom).expanduser().resolve()
+    code_text = read_code(args.code)
+    valid, message, malformed = validate_code_text(code_text, args.game)
+    identity = inspect_n64(rom)
+    if identity.pp64_game and identity.pp64_game != args.game:
+        valid = False
+        message = f"ROM hash identifies {identity.pp64_game.upper()}, but the selected game is {args.game.upper()}."
+    result = {"rom": identity_data(identity),
+              "code": {"valid": valid, "message": message, "malformed_lines": malformed},
+              "patched_rom": False, "mupen": None}
+    if not valid:
+        output(result, args.pretty)
+        return 2
+    with tempfile.TemporaryDirectory(prefix="mpt-cheats-") as data_dir:
+        native_cheat_file(rom, code_text, data_dir, args.game)
+        result["mupen"] = run_process(
+            args.mupen, rom, args.timeout, args.log, args.gfx, args.setting,
+            ("--datadir", data_dir, "--cheats", "0"),
+        )
+    result["mupen"]["cheat_activated"] = "activated cheat code 0" in result["mupen"]["output"]
+    result["mupen"]["gameplay_verified"] = False
+    result["mupen"]["observation"] = observation(
+        loaded=result["mupen"]["header_parsed"],
+        booted=result["mupen"]["header_parsed"],
+    )
+    result["mupen"]["status"] = status_for({"schema_version": 1, "observation": result["mupen"]["observation"]})
+    result["schema_version"] = 1
+    result["observation"] = result["mupen"]["observation"]
+    result["status"] = result["mupen"]["status"]
+    output(result, args.pretty)
+    return 0 if result["mupen"]["header_parsed"] and result["mupen"]["cheat_activated"] else 3
 
 
 def locate_injector():
@@ -201,10 +256,23 @@ def test_command(args):
 
     boot_rom = patched if result["injection"].get("injected") else rom
     if args.skip_mupen:
-        result["mupen"] = {"skipped": True, "gameplay_verified": False}
+        result["mupen"] = {
+            "skipped": True,
+            "gameplay_verified": False,
+            "observation": observation(),
+            "status": "not_loaded",
+        }
     else:
         result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log, args.gfx, args.setting)
         result["mupen"]["gameplay_verified"] = False
+        result["mupen"]["observation"] = observation(
+            loaded=result["mupen"]["header_parsed"],
+            booted=result["mupen"]["header_parsed"],
+        )
+        result["mupen"]["status"] = status_for({"schema_version": 1, "observation": result["mupen"]["observation"]})
+    result["schema_version"] = 1
+    result["observation"] = result["mupen"]["observation"]
+    result["status"] = result["mupen"]["status"]
     output(result, args.pretty)
     if args.skip_mupen:
         return 0
@@ -243,6 +311,18 @@ def parser():
     mupen.add_argument("--set", dest="setting", action="append", default=[], help="Mupen setting, repeatable; e.g. Audio-SDL[RESAMPLE]=src-linear")
     mupen.add_argument("--pretty", action="store_true")
     mupen.set_defaults(handler=run_mupen_command)
+
+    native = sub.add_parser("test-native-cheat", help="Run an unmodified ROM with generated codes via Mupen's cheat engine")
+    native.add_argument("rom", type=Path)
+    native.add_argument("--game", required=True, choices=("mp1", "mp2", "mp3"))
+    native.add_argument("--code", required=True, type=Path)
+    native.add_argument("--mupen", required=True, type=Path)
+    native.add_argument("--timeout", type=float, default=8)
+    native.add_argument("--log", type=Path)
+    native.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
+    native.add_argument("--set", dest="setting", action="append", default=[])
+    native.add_argument("--pretty", action="store_true")
+    native.set_defaults(handler=native_cheat_command)
 
     test = sub.add_parser("test")
     test.add_argument("rom", type=Path)

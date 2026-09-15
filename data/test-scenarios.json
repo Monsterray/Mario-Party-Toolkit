@@ -1,0 +1,29 @@
+[
+  {
+    "id": "mp3-native-cheat-blue-space",
+    "game": "mp3",
+    "runner": "mpt_cli native-cheat",
+    "baseline": "original ROM with no cheat",
+    "modified": "same ROM with one generated Mupen native cheat",
+    "expected_observables": ["coin count or target space visibly changes"],
+    "manual_required": true
+  },
+  {
+    "id": "mp4-native-gecko",
+    "game": "mp4",
+    "runner": "test_dolphin_gecko.py",
+    "baseline": "original ISO/WBFS with Gecko disabled",
+    "modified": "original ISO/WBFS with native Dolphin Gecko code",
+    "expected_observables": ["the selected gameplay value changes"],
+    "manual_required": true
+  },
+  {
+    "id": "mp8-native-gecko",
+    "game": "mp8",
+    "runner": "test_dolphin_gecko.py",
+    "baseline": "original WBFS with Gecko disabled",
+    "modified": "original WBFS with native Dolphin Gecko code",
+    "expected_observables": ["the generated code's target behavior changes"],
+    "manual_required": true
+  }
+]
