@@ -1,0 +1,745 @@
+{
+  "duplicates": [],
+  "errors": [],
+  "records": [
+    {
+      "author": "GameHacking.org contributor",
+      "code_family": "gameshark",
+      "code_lines": [
+        "800ED749 00FF"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the Mecha Fly timer value to FF; confirm the resulting timer in-game.",
+      "evidence": "Mario Party (USA), serial CLBE; listed as 55 Seconds (Mecha Fly), Action Replay/GameShark.",
+      "game": "mp1",
+      "id": "7826e2a1e364e744",
+      "name": "55 Seconds (Mecha Fly)",
+      "region": "USA",
+      "revision": "CLBE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20602"
+    },
+    {
+      "author": "GameHacking.org contributor",
+      "code_family": "gameshark",
+      "code_lines": [
+        "811B571A 03E7"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the first Minigame Stadium coin value to 999.",
+      "evidence": "Mario Party (USA), serial CLBE; listed as 999 Coins In Minigame Stadium (1st Slot).",
+      "game": "mp1",
+      "id": "8694806f0353342a",
+      "name": "999 Coins in Minigame Stadium (1st Slot)",
+      "region": "USA",
+      "revision": "CLBE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20602"
+    },
+    {
+      "author": "SubDrag",
+      "code_family": "gameshark",
+      "code_lines": [
+        "800FA720 00FF"
+      ],
+      "confidence": 0.8,
+      "description": "Keeps the player in the pedaling state during the Pedal Power minigame.",
+      "evidence": "Mario Party (USA), serial CLBE; listed as Always Pedaling Bike In Pedal Power by SubDrag.",
+      "game": "mp1",
+      "id": "ca4c1214d5ff687f",
+      "name": "Always Pedaling Bike in Pedal Power",
+      "region": "USA",
+      "revision": "CLBE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20602"
+    },
+    {
+      "author": "GameHacking.org contributor",
+      "code_family": "gameshark",
+      "code_lines": [
+        "8022623B FFFF"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the Mecha Fly Guy result to the source-listed 21 seconds/191 spins.",
+      "evidence": "Mario Party (USA), serial CLBE; listed as Mecha Fly Guy Flies For 21 Seconds (191 Spins).",
+      "game": "mp1",
+      "id": "7d7355e7d46a64a1",
+      "name": "Mecha Fly Guy Flies for 21 Seconds",
+      "region": "USA",
+      "revision": "CLBE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20602"
+    },
+    {
+      "author": "GameHacking.org contributor",
+      "code_family": "gameshark",
+      "code_lines": [
+        "800FCA03 0064"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the upper-left character's Face Lift score to 100 points.",
+      "evidence": "Mario Party (USA), serial CLBE; listed as Upper Left Character, 100 Points (Face Lift).",
+      "game": "mp1",
+      "id": "8c182afaf90fd7aa",
+      "name": "Face Lift: Upper-Left Character Gets 100 Points",
+      "region": "USA",
+      "revision": "CLBE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20602"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gameshark",
+      "code_lines": [
+        "81054748 080C",
+        "8105474A 0088",
+        "8105474C 4407",
+        "8105474E 1000",
+        "81300220 3C04",
+        "81300222 8010",
+        "81300224 8484",
+        "81300226 D418",
+        "81300228 1644",
+        "8130022A 0002",
+        "8130022C 2400",
+        "81300230 3C05",
+        "81300232 3DAA",
+        "81300234 0801",
+        "81300236 51D4",
+        "81300238 2400"
+      ],
+      "confidence": 0.8,
+      "description": "Changes hidden-block space sizing to approximately half its normal size.",
+      "evidence": "Mario Party 2 (USA), serial NMWE; listed as an Action Replay/GameShark code; page notes version 3.0+ cheat device.",
+      "game": "mp2",
+      "id": "4cece0a5d481bba2",
+      "name": "Hidden Block Spaces Are Half as Big",
+      "region": "USA",
+      "revision": "NMWE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20605"
+    },
+    {
+      "author": "Josh_7774",
+      "code_family": "gameshark",
+      "code_lines": [
+        "810F8CD0 0098",
+        "810F8CD2 967F"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the Mini-Game Land coin total to the source-listed maximum value.",
+      "evidence": "Mario Party 2 (USA), serial NMWE; listed as Maximum Coins In Mini-Game Land.",
+      "game": "mp2",
+      "id": "551ccf3c4a320df7",
+      "name": "Maximum Coins in Mini-Game Land",
+      "region": "USA",
+      "revision": "NMWE",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/20605"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20436918 D01F0068",
+        "044369B0 60000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Prevents the Mario Medley air resource from decreasing.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "6cad87be29de5374",
+      "name": "Mario Medley Infinite Air",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20439EC0 3C60CCCD",
+        "C2439EBC 00000005",
+        "3C608019 1C1D0030",
+        "7C601A14 8863FC3C",
+        "2C030000 4082000C",
+        "38800063 909F0008",
+        "809F0008 00000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets player 1's Three Throw score to 99 when its condition is met.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "53c1375c6f7f3df4",
+      "name": "99 Points P1 Three Throw",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20426560 3C608043",
+        "C242655C 00000002",
+        "3FE08043 3BFFF3A0",
+        "93FE005C 00000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Makes Barrel Baron dig spots award 100 points.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "a10d20391210c136",
+      "name": "All Dig Spots Give 100 Points in Barrel Baron",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "040310BC 3880FFFF"
+      ],
+      "confidence": 0.8,
+      "description": "Unlocks the minigame collection.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as All Minigames (ASM), Gecko.",
+      "game": "mp4",
+      "id": "4281c6d1fbf53f5d",
+      "name": "All Minigames Unlocked",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20432D5C 3860000A",
+        "04432D60 38600009",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Forces the Goomba's Greedy Gala dice game to resolve as a win.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "410c0949ee48d60f",
+      "name": "Always Win Goomba's Greedy Gala Dice Game",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20428378 4E800020",
+        "C2428374 00000002",
+        "3BE003E7 B3E30000",
+        "386003E7 00000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the Barrel Baron score to 999 points.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "3b6db2e795e7db88",
+      "name": "Barrel Baron 999 Points",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20441D98 2C000001",
+        "04441D94 38000001",
+        "044396FC 38000001",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Bypasses the unlock check for Bowser's Gnarly Party.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "3721314321e1c7c3",
+      "name": "Unlock Bowser's Gnarly Party",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "0409E1A8 38600001"
+      ],
+      "confidence": 0.8,
+      "description": "Allows star stealing to target players without stars.",
+      "evidence": "Mario Party 4 (USA) v1.00, serial GMPE01; listed as Gecko.",
+      "game": "mp4",
+      "id": "c9fc3471bb412cae",
+      "name": "Steal Stars From Players Without Stars",
+      "region": "USA",
+      "revision": "v1.00-GMPE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54720"
+    },
+    {
+      "author": "Nutmeg",
+      "code_family": "gecko",
+      "code_lines": [
+        "0623B118 00000008"
+      ],
+      "confidence": 0.7,
+      "description": "Changes the profile-1 name storage behavior; manual save/profile testing is required.",
+      "evidence": "Mario Party 5 (USA), serial GP5E01; listed as Gecko.",
+      "game": "mp5",
+      "id": "e939fc8dc9f91bb6",
+      "name": "Profile 1 Renamer",
+      "region": "USA",
+      "revision": "GP5E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54644"
+    },
+    {
+      "author": "Nutmeg",
+      "code_family": "gecko",
+      "code_lines": [
+        "062385B8 00000008"
+      ],
+      "confidence": 0.7,
+      "description": "Changes the profile-2 name storage behavior; manual save/profile testing is required.",
+      "evidence": "Mario Party 5 (USA), serial GP5E01; listed as Gecko.",
+      "game": "mp5",
+      "id": "27c39451ed81663b",
+      "name": "Profile 2 Renamer",
+      "region": "USA",
+      "revision": "GP5E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54644"
+    },
+    {
+      "author": "Nutmeg",
+      "code_family": "gecko",
+      "code_lines": [
+        "0622A768 00000008"
+      ],
+      "confidence": 0.7,
+      "description": "Changes the profile-3 name storage behavior; manual save/profile testing is required.",
+      "evidence": "Mario Party 5 (USA), serial GP5E01; listed as Gecko.",
+      "game": "mp5",
+      "id": "eab9cb1912a2e4a4",
+      "name": "Profile 3 Renamer",
+      "region": "USA",
+      "revision": "GP5E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/54644"
+    },
+    {
+      "author": "IAMNOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "042BC2D8 0000000A"
+      ],
+      "confidence": 0.8,
+      "description": "Forces the upper-left character's board-game die roll to 10.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "fabc6d1b2efdafb0",
+      "name": "Always Roll 10: Upper-Left Character",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "IAMNOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "042BC2DC 0000000A"
+      ],
+      "confidence": 0.8,
+      "description": "Forces the upper-right character's board-game die roll to 10.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "164182a141a9816f",
+      "name": "Always Roll 10: Upper-Right Character",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "IAMNOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "042BC2E0 0000000A"
+      ],
+      "confidence": 0.8,
+      "description": "Forces the lower-left character's board-game die roll to 10.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "5cda0218b02ba10a",
+      "name": "Always Roll 10: Lower-Left Character",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "IAMNOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "042BC2E4 0000000A"
+      ],
+      "confidence": 0.8,
+      "description": "Forces the lower-right character's board-game die roll to 10.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "8386f7b992087f12",
+      "name": "Always Roll 10: Lower-Right Character",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "ReyVGM",
+      "code_family": "gecko",
+      "code_lines": [
+        "022663CA 000003E7"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the banked star count to 999.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "d661ea576de1ad00",
+      "name": "999 Stars in the Bank",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "IAMANOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "044A5144 40000000",
+        "044A5148 40000000",
+        "044A514C 40000000"
+      ],
+      "confidence": 0.8,
+      "description": "Changes the three Smashdance daytime size values to 2.0f.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "b3f3bceba28ddf70",
+      "name": "Smashdance Day Size Modifier",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "IAMANOBODY",
+      "code_family": "gecko",
+      "code_lines": [
+        "044A5FB4 40000000",
+        "044A5FB8 40000000",
+        "044A5FBC 40000000"
+      ],
+      "confidence": 0.8,
+      "description": "Changes the three Smashdance nighttime size values to 2.0f.",
+      "evidence": "Mario Party 6 (USA), serial GP6E01; Gecko format listing.",
+      "game": "mp6",
+      "id": "3ba261948faf95b4",
+      "name": "Smashdance Night Size Modifier",
+      "region": "USA",
+      "revision": "GP6E01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/?format=gko&game=54645&hacker=all"
+    },
+    {
+      "author": "farjo08",
+      "code_family": "gecko",
+      "code_lines": [
+        "0273D12C 0000270F"
+      ],
+      "confidence": 0.85,
+      "description": "Sets the Carnival Parade card count to 9999; the source forum corrects the address to 0273D12C.",
+      "evidence": "Mario Party 8 USA RM8E01; forum correction says cards are stored at 8073D12C and the value is 16-bit.",
+      "game": "mp8",
+      "id": "3ffd0eb78ebcf152",
+      "name": "Infinite Carnival Cards",
+      "region": "USA",
+      "revision": "RM8E01",
+      "source_name": "WiiRD/GameHacking forum",
+      "source_url": "https://wiird.gamehacking.org/forum/index.php?topic=1463.0"
+    },
+    {
+      "author": "LakituX",
+      "code_family": "gecko",
+      "code_lines": [
+        "282CDE29 00000408",
+        "00228307 00000002",
+        "282CDE29 00000401",
+        "0022841F 00000002",
+        "282CDE29 00000402",
+        "00228537 00000002",
+        "282CDE29 00000404",
+        "0022864F 00000002"
+      ],
+      "confidence": 0.85,
+      "description": "Provides controller-button conditions that grant infinite turns for players in turn order.",
+      "evidence": "Mario Party 8 USA RM8E01; forum states B+Up/Left/Right/Down control players 1-4.",
+      "game": "mp8",
+      "id": "0da78b9aca7d0ae0",
+      "name": "Infinite Turns",
+      "region": "USA",
+      "revision": "RM8E01",
+      "source_name": "WiiRD/GameHacking forum",
+      "source_url": "https://wiird.gamehacking.org/forum/index.php?topic=1463.0"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "2037DD10 90030288",
+        "0437DD10 60000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Freezes the Ballistic Beach time-trial timer.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "5a38f580c85640ec",
+      "name": "Freeze Time: Ballistic Beach Time Trials",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20371F30 2C000005",
+        "04371F30 2C000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Makes the Ballistic Beach time-trial condition resolve as an instant win.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "dcd6be1b37d643f1",
+      "name": "Instant Win: Ballistic Beach Time Trials",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20451AE4 380003E7",
+        "C2451AC4 00000003",
+        "2C1C0000 4182000C",
+        "7C05CA14 48000008",
+        "380003E7 00000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Raises player 1's High Rollers score to 999 after a score gain.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "3f91fad8f98c98db",
+      "name": "P1 Max Score After Gain: High Rollers",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "2036DDC4 7FC4F378",
+        "C236DDC0 00000003",
+        "2C1E0000 4082000C",
+        "38A00063 90A401DC",
+        "80A401DC 00000000",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets player 1's Bumper Bubbles score to 99.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "8a47610964b95c4b",
+      "name": "99 Points: P1 Bumper Bubbles",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "2036D53C 38030001",
+        "057515F4 00000063",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets player 1's Tuber Tug score to 99.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "a312e9092709005f",
+      "name": "99 Points: P1 Tuber Tug",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20377F80 80630000",
+        "C2377F80 00000003",
+        "2C040000 4082000C",
+        "39800063 91830000",
+        "80630000 00000000",
+        "E0000000 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets player 1's Whomp Stomp score to 99.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "011c9b3c2f67d5e6",
+      "name": "99 Points: P1 Whomp Stomp",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "20399908 801C0018",
+        "0574EF74 000003E7",
+        "057270D8 000003E7",
+        "E2000001 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets player 1's Pit or Platter result to 999 points.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "5645f0b86fea9ec4",
+      "name": "999 Points: P1 Pit or Platter",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "F2391C4C 027FAE02",
+        "3980270F 918306C0",
+        "806306C0 00000000"
+      ],
+      "confidence": 0.8,
+      "description": "Sets the party-point total to 9999.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "4b6aba1f4f39e10f",
+      "name": "9999 Party Points",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "48000000 8026E2A8",
+        "DE000000 80008180",
+        "100006D2 00000001",
+        "E0000000 80008000",
+        "48000000 80369220",
+        "DE000000 80008180",
+        "30024C5C 2C030000",
+        "14024C58 38600001",
+        "E0000000 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Bypasses the board unlock checks.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "ddbea05c15a7372c",
+      "name": "Unlock Boards",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "48000000 80369220",
+        "DE000000 80008180",
+        "3000FF6C 2C030000",
+        "1400FF70 4800013C",
+        "140100C4 4800013C",
+        "E0000000 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Bypasses the character unlock checks.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "3cf3fe7413e7f922",
+      "name": "Unlock Characters",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    },
+    {
+      "author": "gamemasterplc",
+      "code_family": "gecko",
+      "code_lines": [
+        "48000000 80369220",
+        "DE000000 80008180",
+        "3002266C 2C000000",
+        "14022670 48000188",
+        "E0000000 80008000"
+      ],
+      "confidence": 0.8,
+      "description": "Bypasses the Boss Rush unlock check.",
+      "evidence": "Mario Party 9 (USA), serial SSQE01; listed as Gecko.",
+      "game": "mp9",
+      "id": "e25ff53fede816e8",
+      "name": "Unlock Boss Rush",
+      "region": "USA",
+      "revision": "SSQE01",
+      "source_name": "GameHacking.org",
+      "source_url": "https://gamehacking.org/game/116316"
+    }
+  ],
+  "schema_version": 1
+}

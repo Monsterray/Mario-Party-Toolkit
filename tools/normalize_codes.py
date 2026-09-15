@@ -53,6 +53,8 @@ def normalize_record(raw):
         "revision": _text(raw.get("revision", "unknown"), "revision"),
         "code_family": _text(raw.get("code_family", "unknown"), "code_family").lower(),
         "name": _text(raw.get("name"), "name"),
+        "description": _text(raw.get("description", raw.get("name")), "description"),
+        "author": _text(raw.get("author", "unknown"), "author"),
         "code_lines": lines,
         "source_url": _source_url(raw.get("source_url")),
         "source_name": _text(raw.get("source_name"), "source_name"),

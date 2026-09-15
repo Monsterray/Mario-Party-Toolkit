@@ -13,5 +13,15 @@
     "name": "GeckoLoader",
     "url": "https://github.com/JoshuaMKW/GeckoLoader",
     "scope": "GameCube/Wii Gecko code loading and DOL patching"
+  },
+  {
+    "name": "GameHacking.org Mario Party pages",
+    "url": "https://gamehacking.org/system/wii/mario%20party",
+    "scope": "Version-labeled N64, GameCube, and Wii code pages; source of the imported candidates"
+  },
+  {
+    "name": "WiiRD Mario Party 8 thread",
+    "url": "https://wiird.gamehacking.org/forum/index.php?topic=1463.0",
+    "scope": "RM8E01 Gecko code corrections and controller-condition details"
   }
 ]

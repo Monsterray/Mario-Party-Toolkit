@@ -21,6 +21,8 @@ class NormalizeCodeTests(unittest.TestCase):
         self.assertEqual(record["game"], "mp3")
         self.assertEqual(record["region"], "NTSC-U")
         self.assertEqual(record["name"], "Blue space")
+        self.assertEqual(record["description"], "Blue space")
+        self.assertEqual(record["author"], "unknown")
         self.assertEqual(record["code_lines"], ["810FE284 3408"])
         self.assertEqual(record["ignored_lines"], ["MP3 - label"])
         self.assertFalse(result["errors"])
