@@ -45,7 +45,7 @@ class TextSizedTabBar(QTabBar):
 
     def tabSizeHint(self, index):
         size = super().tabSizeHint(index)
-        longest_width = max(
+        longest_width = max(220, max(
             [
                 self.fontMetrics().horizontalAdvance(self.tabText(i)) + 24
                 for i in range(self.count())
@@ -54,7 +54,7 @@ class TextSizedTabBar(QTabBar):
                 for i in range(self.count())
             ],
             default=size.width(),
-        )
+        ))
         size.setWidth(longest_width)
         return size
 

@@ -32,6 +32,7 @@ class TabStyleTests(unittest.TestCase):
             tab_bar.tabRect(0).width(),
             QFontMetrics(tab_bar.font()).horizontalAdvance("Minigame Replacement") + 24,
         )
+        self.assertGreaterEqual(tab_bar.tabRect(0).width(), 220)
         self.assertIn("alignment: center", tab_widget.styleSheet())
         self.assertNotIn("min-width", tab_widget.styleSheet())
 
