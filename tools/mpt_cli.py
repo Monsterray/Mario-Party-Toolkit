@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -120,6 +121,9 @@ def run_mupen_command(args):
 
 
 def locate_injector():
+    override = os.environ.get("MPT_GSINJECT")
+    if override:
+        return Path(override).expanduser()
     candidates = [
         Path(__file__).resolve().parents[1] / "dependencies/macOS/GSInject",
         Path.home() / "Tools/mario-party-rom-lab/bin/GSInject",

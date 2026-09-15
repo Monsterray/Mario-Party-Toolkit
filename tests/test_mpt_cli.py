@@ -1,6 +1,7 @@
 import json
 import tempfile
 import unittest
+import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -27,6 +28,10 @@ class MptCliTests(unittest.TestCase):
         with patch("sys.stderr.write"):
             result = mpt_cli.main(["inspect-rom", "/missing.z64"])
         self.assertEqual(result, 1)
+
+    def test_injector_environment_override_wins(self):
+        with patch.dict(os.environ, {"MPT_GSINJECT": "/tmp/GSInject"}):
+            self.assertEqual(mpt_cli.locate_injector(), Path("/tmp/GSInject"))
 
 
 if __name__ == "__main__":
