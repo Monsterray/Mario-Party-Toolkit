@@ -102,7 +102,9 @@ def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=()):
     command.extend(["--gfx", gfx or "mupen64plus-video-glide64mk2"])
     for setting in settings:
         command.extend(["--set", setting])
-    command.extend(["--windowed", "--noosd", "--nosaveoptions", str(rom)])
+    # Let Mupen use its tested macOS display mode; forcing --windowed can make
+    # the bundled SDL/Glide stack abort during Cocoa window creation.
+    command.extend(["--noosd", "--nosaveoptions", str(rom)])
     try:
         completed = subprocess.run(
             command,

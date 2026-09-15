@@ -41,6 +41,7 @@ class MptCliTests(unittest.TestCase):
         self.assertIn("mupen64plus-video-glide64mk2", command)
         self.assertIn("Audio-SDL[RESAMPLE]=src-linear", command)
         self.assertIn("Audio-SDL[AUDIO_SYNC]=False", command)
+        self.assertNotIn("--windowed", command)
 
     def test_bundled_mupen_uses_source_directory_for_relative_assets(self):
         executable = "/tools/mupen64plus-2.6.0/mupen64plus.app/Contents/MacOS/mupen64plus"
