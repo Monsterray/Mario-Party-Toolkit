@@ -10,7 +10,7 @@
 # Creates game-specific pages with modification tabs
 # ============================================
 
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QSizePolicy
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QTabBar, QSizePolicy
 from PyQt5.QtCore import Qt
 from qfluentwidgets import BodyLabel
 
@@ -34,6 +34,17 @@ from pages.game_tabs.board_specific_mp8_tab import BoardSpecificMp8Tab
 from pages.game_tabs.items_mp7_tab import ItemsMP7Tab
 from pages.game_tabs.battle_minigame_global_tab import BattleMinigameTab
 from pages.game_tabs.items_mp6_tab import ItemsMP6Tab
+
+
+class TextSizedTabBar(QTabBar):
+    """Size every tab for its full label, then scroll when space runs out."""
+
+    def tabSizeHint(self, index):
+        size = super().tabSizeHint(index)
+        text_width = self.fontMetrics().horizontalAdvance(self.tabText(index)) + 24
+        size.setWidth(max(size.width(), text_width))
+        return size
+
 
 class MarioPartyPages:
     def __init__(self):
@@ -66,6 +77,7 @@ class MarioPartyPages:
         
         # Create tab widget with modern styling
         tab_widget = QTabWidget()
+        tab_widget.setTabBar(TextSizedTabBar(tab_widget))
         tab_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         
         # Style the tab widget with consistent gray theme

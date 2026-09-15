@@ -103,7 +103,7 @@ class ScaleManager:
             if stylesheet:
                 widget.setStyleSheet(ScaleManager.scale_stylesheet(stylesheet, scale_factor))
             widget.setProperty("mptScaled", True)
-    
+
     @staticmethod
     def get_scale_percentage():
         """Get the current scale as a percentage string (e.g., '100%')"""

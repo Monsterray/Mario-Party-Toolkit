@@ -1,9 +1,10 @@
 import unittest
 
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFontMetrics
 from PyQt5.QtWidgets import QApplication, QTabWidget, QWidget
 
-from pages.mario_party_pages import MarioPartyPages
+from pages.mario_party_pages import MarioPartyPages, TextSizedTabBar
 
 
 class TabStyleTests(unittest.TestCase):
@@ -28,6 +29,17 @@ class TabStyleTests(unittest.TestCase):
         self.assertGreater(tab_bar.tabRect(1).width(), tab_bar.tabRect(0).width())
         self.assertIn("alignment: center", tab_widget.styleSheet())
         self.assertNotIn("min-width", tab_widget.styleSheet())
+
+    def test_tab_widths_fit_rendered_text(self):
+        tab_widget = QTabWidget()
+        tab_widget.setTabBar(TextSizedTabBar(tab_widget))
+        tab_widget.addTab(QWidget(), "Minigame Replacement")
+        tab_widget.show()
+        self.app.processEvents()
+
+        tab_bar = tab_widget.tabBar()
+        needed = QFontMetrics(tab_bar.font()).horizontalAdvance(tab_bar.tabText(0))
+        self.assertGreaterEqual(tab_bar.tabRect(0).width(), needed + 24)
 
 
 if __name__ == "__main__":
