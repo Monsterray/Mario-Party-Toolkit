@@ -11,7 +11,7 @@
 # ============================================
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QTabBar, QSizePolicy
-from PyQt5.QtCore import QEvent, QTimer, Qt
+from PyQt5.QtCore import Qt
 from qfluentwidgets import BodyLabel
 
 from pages.game_tabs.coins_global_tab import CoinsTab
@@ -39,61 +39,9 @@ from pages.game_tabs.items_mp6_tab import ItemsMP6Tab
 class TextSizedTabBar(QTabBar):
     """Size every tab for the longest label, then scroll when space runs out."""
 
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self._tab_alignment = None
-        if parent is not None:
-            parent.installEventFilter(self)
-
     def tabInserted(self, index):
         super().tabInserted(index)
         self.updateGeometry()
-        QTimer.singleShot(0, self._update_alignment)
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        QTimer.singleShot(0, self._update_alignment)
-
-    def eventFilter(self, watched, event):
-        if watched is self.parentWidget() and event.type() in (
-            QEvent.StyleChange,
-            QEvent.FontChange,
-        ):
-            self._tab_alignment = None
-            QTimer.singleShot(0, self._update_alignment)
-        return super().eventFilter(watched, event)
-
-    def _update_alignment(self):
-        """Center tabs when they fit; otherwise keep them in the scroll area."""
-        tab_widget = self.parentWidget()
-        if not isinstance(tab_widget, QTabWidget) or not self.count():
-            return
-
-        total_width = sum(self.tabSizeHint(i).width() for i in range(self.count()))
-        alignment = "center" if total_width <= self.width() else "left"
-        if alignment == self._tab_alignment:
-            return
-
-        stylesheet = tab_widget.styleSheet()
-        marker = "QTabWidget::tab-bar"
-        start = stylesheet.find(marker)
-        end = stylesheet.find("}", start)
-        if start < 0 or end < 0:
-            return
-
-        block = stylesheet[start:end]
-        lines = block.splitlines()
-        updated_block = [
-            f"                alignment: {alignment};"
-            if "alignment:" in line
-            else line
-            for line in lines
-        ]
-        updated = stylesheet[:start] + "\n".join(updated_block) + stylesheet[end:]
-        self._tab_alignment = alignment
-        if updated != stylesheet:
-            tab_widget.setStyleSheet(updated)
-            QTimer.singleShot(0, self._update_alignment)
 
     def tabSizeHint(self, index):
         size = super().tabSizeHint(index)
@@ -172,7 +120,7 @@ class MarioPartyPages:
                 padding: 0;
             }
             QTabWidget::tab-bar {
-                alignment: center;
+                alignment: left;
                 background: transparent;
                 border: none;
                 margin: 0;
