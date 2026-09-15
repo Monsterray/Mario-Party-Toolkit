@@ -120,7 +120,7 @@ class MarioPartyPages:
                 padding: 0;
             }
             QTabWidget::tab-bar {
-                alignment: left;
+                alignment: center;
                 background: transparent;
                 border: none;
                 margin: 0;

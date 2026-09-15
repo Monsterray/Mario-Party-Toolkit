@@ -28,10 +28,8 @@ class UITestHooks:
                     options.mpt_test_screenshot, options.mpt_test_dump)):
             return
 
-        def inspect():
-            if options.mpt_test_game:
-                window.navigationInterface.setCurrentItem(options.mpt_test_game)
-
+        def capture():
+            """Capture after navigation and Qt have completed their layouts."""
             page = window.findChild(QWidget, f"{options.mpt_test_game}Page") if options.mpt_test_game else None
             tab_widget = page.findChild(QTabWidget) if page else None
             if tab_widget and options.mpt_test_tab:
@@ -51,8 +49,13 @@ class UITestHooks:
                 options.mpt_test_screenshot.parent.mkdir(parents=True, exist_ok=True)
                 window.grab().save(str(options.mpt_test_screenshot))
 
-        QTimer.singleShot(100, inspect)
-        QTimer.singleShot(max(100, options.mpt_test_quit_after),
+        def navigate_then_capture():
+            if options.mpt_test_game:
+                window.navigationInterface.setCurrentItem(options.mpt_test_game)
+            QTimer.singleShot(150, capture)
+
+        QTimer.singleShot(100, navigate_then_capture)
+        QTimer.singleShot(max(500, options.mpt_test_quit_after),
                           QApplication.instance().quit)
 
     @staticmethod
@@ -62,6 +65,12 @@ class UITestHooks:
             bar = tab_widget.tabBar()
             snapshot["tabs"].append({
                 "page": tab_widget.parentWidget().objectName(),
+                "bar_geometry": [bar.x(), bar.y(), bar.width(), bar.height()],
+                "stylesheet_tab_bar": next(
+                    (line.strip() for line in tab_widget.styleSheet().splitlines()
+                     if "alignment:" in line),
+                    None,
+                ),
                 "items": [
                     {"text": tab_widget.tabText(i), "rect": [
                         bar.tabRect(i).x(), bar.tabRect(i).y(),
