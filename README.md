@@ -69,7 +69,34 @@ ROM=/path/to/mario-party-1.z64
   --mupen "$MUPEN" --output-dir test-results --pretty
 ```
 
-The JSON report distinguishes ROM-header parsing from gameplay verification. Mupen may still stop when its OpenGL context cannot be created; that is an emulator/display limitation, not proof that the ROM or code is wrong. On an Intel Mac, verify native tool architecture with `file`; the bundled macOS `GSInject` currently requires an arm64 injector or an Intel-compatible replacement configured with `MPT_GSINJECT`.
+The JSON report distinguishes ROM-header parsing from gameplay verification. Exit status `0` means the ROM was injected and Mupen parsed its header; `2` means code validation failed; `3` means Mupen did not parse a header; `4` means injection failed. Mupen may stop when its OpenGL context cannot be created; that is an emulator/display limitation, not proof that the ROM or code is wrong.
+When Mupen stops before parsing the header, gameplay remains unverified.
+
+### Intel macOS GSInject
+
+The bundled macOS GSInject is arm64. On an Intel Mac, install an x86_64 build in the shared ROM-lab tools directory and select it explicitly:
+
+```bash
+file ~/Tools/mario-party-rom-lab/bin/GSInject
+export MPT_GSINJECT=~/Tools/mario-party-rom-lab/bin/GSInject
+```
+
+The override is also honored by the GUI injector. Keep patched ROMs in a separate results directory; the CLI never overwrites its input ROM.
+
+### MP3 smoke-test example
+
+This tests a verified NTSC-U MP3 base ROM and writes the patched copy to `test-results/mp3-stars`:
+
+```bash
+ROM="$HOME/Tools/mario-party-rom-lab/roms/Mario Party 3/Mario Party 3 (U) [!].z64"
+MUPEN="$HOME/Tools/mario-party-rom-lab/source/mupen64plus-2.6.0/mupen64plus.app/Contents/MacOS/mupen64plus"
+./mariovenv/bin/python tools/mpt_cli.py generate-code \
+  codes.marioParty3.getStarSpaceCodeThree 0A 00 10 |
+./mariovenv/bin/python tools/mpt_cli.py test "$ROM" --game mp3 --code - \
+  --mupen "$MUPEN" --output-dir test-results/mp3-stars --pretty
+```
+
+The MP3 generator expects `switch` as one hexadecimal digit. For example, use `A`, not `00`; the CLI rejects malformed generated lines before injection.
 
 ## Injector backends
 
@@ -77,7 +104,7 @@ The injector uses these tools:
 
 | Input | Backend | Current status |
 |---|---|---|
-| N64 `.z64` | `GSInject` | Windows binary bundled; no verified macOS/Linux port yet |
+| N64 `.z64` | `GSInject` | Windows binary bundled; Intel macOS requires an x86_64 build selected with `MPT_GSINJECT` |
 | ISO/WBFS | `wit` | Supported when a native executable is installed |
 | GameCube/Wii DOL | GeckoLoader | Windows binary bundled; official Python CLI supported on macOS/Linux |
 
