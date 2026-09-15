@@ -107,6 +107,18 @@ Build from the current source using `build.py` or `build-macos.sh`. Both scripts
 
 Run `./dist/MarioPartyToolkit` in Terminal and copy the complete traceback. Running the executable directly is more useful for diagnosis than double-clicking the `.app` bundle.
 
+### macOS injection dependencies
+
+The macOS injector uses an isolated temporary workspace and reports the exact helper that is missing. The repository currently ships the Windows helpers; N64/GameCube/Wii injection on macOS requires compatible Darwin builds of `GSInject`, `GeckoLoader`, and the disc-image tools. Code generation and ROM inspection work without those helpers. Do not copy the Windows `.exe` files into `dependencies/darwin`; they are not macOS executables.
+
+Before injecting, verify the selected N64 file is a big-endian `.z64` image. For Mario Party 1–3, generated code is checked against the game label and the PP64-supported base-ROM identity when the original base hash is still present. PP64-edited ROMs are treated as derivatives and should be tested in an emulator before sharing.
+
+## PartyPlanner64 workflow
+
+[PartyPlanner64](https://github.com/PartyPlanner64/PartyPlanner64) is the board editor for the NTSC-U Mario Party 1–3 base ROMs. Use it to create or edit a board, save the resulting user-owned ROM, then use MPT to inspect the ROM, generate matching codes, and launch a tested copy in an N64 emulator. Both projects remain separate; MPT does not bundle ROMs, extracted assets, or PP64’s private editor data.
+
+PP64 requires the Expansion Pak/8 MB RAM in the emulator. Its published base-ROM identities and the validation flow are documented in [the integration research note](docs/research/partyplanner64-integration.md).
+
 ## Project structure
 
 ```text
