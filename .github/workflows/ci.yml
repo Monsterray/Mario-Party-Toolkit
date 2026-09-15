@@ -24,4 +24,22 @@ jobs:
         name: MarioPartyToolkit-win32
         path: D:\a\Mario-Party-Toolkit\Mario-Party-Toolkit\dist
 
+  build-macos:
+    name: "macOS Build"
+    runs-on: macos-14
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install macOS dependencies
+      run: ./install_macos_deps.sh
+
+    - name: Build Project
+      run: ./build-macos.sh
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: MarioPartyToolkit-macos
+        path: dist/
 
