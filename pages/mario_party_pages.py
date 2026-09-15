@@ -11,7 +11,8 @@
 # ============================================
 
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTabWidget, QTabBar, QSizePolicy
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import QTimer, Qt
+import re
 from qfluentwidgets import BodyLabel
 
 from pages.game_tabs.coins_global_tab import CoinsTab
@@ -39,9 +40,41 @@ from pages.game_tabs.items_mp6_tab import ItemsMP6Tab
 class TextSizedTabBar(QTabBar):
     """Size every tab for the longest label, then scroll when space runs out."""
 
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._tab_alignment = None
+
     def tabInserted(self, index):
         super().tabInserted(index)
         self.updateGeometry()
+        QTimer.singleShot(0, self._update_alignment)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        QTimer.singleShot(0, self._update_alignment)
+
+    def _update_alignment(self):
+        """Center tabs when they fit; otherwise keep them in the scroll area."""
+        tab_widget = self.parentWidget()
+        if not isinstance(tab_widget, QTabWidget) or not self.count():
+            return
+
+        total_width = sum(self.tabSizeHint(i).width() for i in range(self.count()))
+        alignment = "center" if total_width <= self.width() else "left"
+        if alignment == self._tab_alignment:
+            return
+
+        stylesheet = tab_widget.styleSheet()
+        updated = re.sub(
+            r"(QTabWidget::tab-bar\s*\{[^}]*alignment:\s*)(?:left|center)",
+            rf"\g<1>{alignment}",
+            stylesheet,
+            count=1,
+        )
+        self._tab_alignment = alignment
+        if updated != stylesheet:
+            tab_widget.setStyleSheet(updated)
+            QTimer.singleShot(0, self._update_alignment)
 
     def tabSizeHint(self, index):
         size = super().tabSizeHint(index)

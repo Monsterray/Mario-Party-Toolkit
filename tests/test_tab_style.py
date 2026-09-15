@@ -46,6 +46,30 @@ class TabStyleTests(unittest.TestCase):
         needed = QFontMetrics(tab_bar.font()).horizontalAdvance(tab_bar.tabText(0))
         self.assertGreaterEqual(tab_bar.tabRect(0).width(), needed + 24)
 
+    def test_overflow_tabs_stay_in_scroll_area(self):
+        tab_widget = QTabWidget()
+        tab_widget.setTabBar(TextSizedTabBar(tab_widget))
+        pages = MarioPartyPages()
+        pages.apply_tab_style(tab_widget)
+        for label in (
+            "Coins Mods",
+            "Item Prices",
+            "Item Replacement",
+            "Minigame Replacement",
+            "Star Handicaps",
+            "Bonus Star Replacement",
+        ):
+            tab_widget.addTab(QWidget(), label)
+
+        tab_widget.resize(300, 400)
+        tab_widget.show()
+        self.app.processEvents()
+
+        tab_bar = tab_widget.tabBar()
+        self.assertIn("alignment: left", tab_widget.styleSheet())
+        self.assertGreaterEqual(tab_bar.tabRect(0).x(), 0)
+        self.assertGreaterEqual(tab_bar.tabRect(0).width(), 200)
+
 
 if __name__ == "__main__":
     unittest.main()
