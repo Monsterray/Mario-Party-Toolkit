@@ -137,6 +137,16 @@ For the bundled Mupen build on this Intel Mac, use Glide64mk2. It renders MP3 co
   --mupen "$MUPEN" --timeout 30 --pretty
 ```
 
+For the fastest board-load smoke test, add `--fast`. This selects dummy audio
+and disables the speed limiter; sound is intentionally unavailable. Normal
+testing should omit it and use Mupen's `F` key for temporary fast-forward.
+`F10`/`F11` adjust speed by 5%, and `/` advances one frame while paused.
+Add `--testshots 300 --screenshot-dir /private/tmp/mpt-shots` to capture a
+deterministic startup frame and exit automatically.
+
+The tested Mupen keyboard layout is: analog stick `WASD`, A `Right Ctrl`, B
+`Right Alt`, Z `Z`, Start `Enter`, C buttons `I/J/K/L`, and triggers `X/C`.
+
 ### GameCube/Wii Gecko-code testing (MP4–9)
 
 GameCube codes use GeckoLoader and a rebuilt ISO. The reusable helper prints the
@@ -171,6 +181,14 @@ For Dolphin validation, use the native Gecko path instead of the rebuilt ISO:
 On the tested Dolphin build, the GeckoLoader-patched image crashes in its
 embedded handler at `0x81200D60`, while the same code works through Dolphin's
 native Gecko manager.
+
+Dolphin's default fast-forward/turbo hotkey is `Tab` (hold it). `Space` is
+frame advance when paused. The current keyboard GameCube layout is: analog
+stick arrow keys, A `X`, B `Z`, X `C`, Y `S`, Z `D`, Start `Enter`, L `Q`, R
+`W`, C-stick `I/J/K/L`, and D-pad `T/F/G/H`. A physical GameCube controller is
+recommended for play; configure it under Controllers if the keyboard map is
+not active. The Dolphin runner also accepts `--fast`, which disables its speed
+limiter and audio stretching for short board-load smoke tests.
 
 Mupen settings are passed with repeatable `--set` options. If gameplay or sound runs below real time, first try the lower-CPU audio resampler:
 

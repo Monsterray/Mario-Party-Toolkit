@@ -62,6 +62,26 @@ the importer.
 - Cache extracted pages and disassembly; send only changed or relevant facts.
 - Use frontier models only for unresolved conflicts or high-value synthesis.
 
+The first phase-5 recorder is `tools/research_loop.py`. It stores one compact,
+content-addressed evidence record with the source URL, exact evidence,
+model-produced summary, and explicit unknowns. It does not let a model invent
+source URLs or silently turn uncertainty into facts:
+
+```bash
+./mariovenv/bin/python tools/research_loop.py \
+  --topic "Dolphin Gecko support" \
+  --source-url https://dolphin-emu.org/docs/guides/configuring-controllers/ \
+  --source-name "Dolphin documentation" \
+  --evidence "Source-backed observation goes here" \
+  --summary "Short local-model summary goes here" \
+  --model devstral-24b-int8 \
+  --unknown "Needs confirmation on this Dolphin build" \
+  --output test-results/research/gecko.json
+```
+
+Keep the full source and emulator output outside the repository when it is
+large; commit only compact evidence records or curated research notes.
+
 ## Milestone 1 usage
 
 Print the current deterministic catalog with:

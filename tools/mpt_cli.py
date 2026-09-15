@@ -98,12 +98,19 @@ def mupen_workdir(executable):
     return None
 
 
-def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=(), extra=()):
+def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=(), extra=(), fast=False, testshots=None, screenshot_dir=None):
     command = [str(executable)]
     command.extend(["--gfx", gfx or "mupen64plus-video-glide64mk2"])
     for setting in settings:
         command.extend(["--set", setting])
     command.extend(extra)
+    if fast:
+        command.extend(["--audio", "dummy", "--nospeedlimit"])
+    if testshots:
+        command.extend(["--testshots", str(testshots)])
+        if screenshot_dir:
+            Path(screenshot_dir).expanduser().mkdir(parents=True, exist_ok=True)
+            command.extend(["--sshotdir", str(Path(screenshot_dir).expanduser())])
     # Let Mupen use its tested macOS display mode; forcing --windowed can make
     # the bundled SDL/Glide stack abort during Cocoa window creation.
     command.extend(["--noosd", "--nosaveoptions", str(rom)])
@@ -137,7 +144,7 @@ def run_process(executable, rom, timeout, log_path=None, gfx=None, settings=(), 
 
 
 def run_mupen_command(args):
-    result = run_process(args.mupen, args.rom, args.timeout, args.log, args.gfx, args.setting)
+    result = run_process(args.mupen, args.rom, args.timeout, args.log, args.gfx, args.setting, fast=args.fast, testshots=args.testshots, screenshot_dir=args.screenshot_dir)
     output(result, args.pretty)
     return 0 if result["header_parsed"] else 3
 
@@ -180,6 +187,9 @@ def native_cheat_command(args):
         result["mupen"] = run_process(
             args.mupen, rom, args.timeout, args.log, args.gfx, args.setting,
             ("--datadir", data_dir, "--cheats", "0"),
+            args.fast,
+            args.testshots,
+            args.screenshot_dir,
         )
     result["mupen"]["cheat_activated"] = "activated cheat code 0" in result["mupen"]["output"]
     result["mupen"]["gameplay_verified"] = False
@@ -263,7 +273,7 @@ def test_command(args):
             "status": "not_loaded",
         }
     else:
-        result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log, args.gfx, args.setting)
+        result["mupen"] = run_process(args.mupen, boot_rom, args.timeout, args.log, args.gfx, args.setting, fast=args.fast, testshots=args.testshots, screenshot_dir=args.screenshot_dir)
         result["mupen"]["gameplay_verified"] = False
         result["mupen"]["observation"] = observation(
             loaded=result["mupen"]["header_parsed"],
@@ -309,6 +319,9 @@ def parser():
     mupen.add_argument("--log", type=Path)
     mupen.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
     mupen.add_argument("--set", dest="setting", action="append", default=[], help="Mupen setting, repeatable; e.g. Audio-SDL[RESAMPLE]=src-linear")
+    mupen.add_argument("--fast", action="store_true", help="Disable audio and speed-limit for fast board-load smoke tests")
+    mupen.add_argument("--testshots", help="Comma-separated frames to capture, then quit")
+    mupen.add_argument("--screenshot-dir", type=Path, help="Directory for --testshots output")
     mupen.add_argument("--pretty", action="store_true")
     mupen.set_defaults(handler=run_mupen_command)
 
@@ -321,6 +334,9 @@ def parser():
     native.add_argument("--log", type=Path)
     native.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
     native.add_argument("--set", dest="setting", action="append", default=[])
+    native.add_argument("--fast", action="store_true", help="Disable audio and speed-limit for fast board-load smoke tests")
+    native.add_argument("--testshots", help="Comma-separated frames to capture, then quit")
+    native.add_argument("--screenshot-dir", type=Path, help="Directory for --testshots output")
     native.add_argument("--pretty", action="store_true")
     native.set_defaults(handler=native_cheat_command)
 
@@ -334,6 +350,9 @@ def parser():
     test.add_argument("--log", type=Path)
     test.add_argument("--gfx", help="Mupen video plugin (default: mupen64plus-video-glide64mk2)")
     test.add_argument("--set", dest="setting", action="append", default=[], help="Mupen setting, repeatable; e.g. Audio-SDL[RESAMPLE]=src-linear")
+    test.add_argument("--fast", action="store_true", help="Disable audio and speed-limit for fast board-load smoke tests")
+    test.add_argument("--testshots", help="Comma-separated frames to capture, then quit")
+    test.add_argument("--screenshot-dir", type=Path, help="Directory for --testshots output")
     test.add_argument("--skip-mupen", action="store_true")
     test.add_argument("--pretty", action="store_true")
     test.set_defaults(handler=test_command)

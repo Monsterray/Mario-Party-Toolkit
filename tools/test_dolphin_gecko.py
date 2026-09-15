@@ -20,6 +20,7 @@ def main():
     parser.add_argument("--function", required=True)
     parser.add_argument("arguments", nargs="*")
     parser.add_argument("--dolphin", required=True, type=Path)
+    parser.add_argument("--fast", action="store_true", help="Run without Dolphin's speed limiter for board-load smoke tests")
     args = parser.parse_args()
 
     module = importlib.import_module(f"codes.marioParty{args.game[-1]}")
@@ -33,7 +34,10 @@ def main():
         config = Path(user_dir) / "Config"
         settings = config / "GameSettings"
         settings.mkdir(parents=True)
-        (config / "Dolphin.ini").write_text("[Core]\nEnableCheats = True\n", encoding="utf-8")
+        core = "[Core]\nEnableCheats = True\n"
+        if args.fast:
+            core += "SpeedLimit = 0\nAudioStretch = False\n"
+        (config / "Dolphin.ini").write_text(core, encoding="utf-8")
         settings_file = settings / {
             "mp4": "GMPE01.ini", "mp5": "GP5E01.ini", "mp6": "GP6E01.ini", "mp7": "GP7E01.ini",
             "mp8": "RM8E01.ini", "mp9": "SSQE01.ini",
