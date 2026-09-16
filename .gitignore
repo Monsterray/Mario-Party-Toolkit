@@ -13,6 +13,17 @@ __pycache__/
 !data/*.json
 tmp/
 
+# User-owned ROMs and emulator images; never commit game backups.
+*.iso
+*.wbfs
+*.gcm
+*.gcz
+*.n64
+*.v64
+*.z64
+roms/
+test-results/
+
 # Test, coverage, and type-checker output
 .pytest_cache/
 .mypy_cache/
