@@ -264,11 +264,11 @@ N64 injection accepts big-endian `.z64` files and checks explicit `MP1`, `MP2`, 
 | Mario Party 2 | `04840612A35ECE222AFDB2DFBF926409` |
 | Mario Party 3 | `76A8BBC81BC2060EC99C9645867237CC` |
 
-Edited PP64 ROMs will not retain the base hash. They are treated as derivatives and must be tested in an emulator before distribution.
+Edited PP64 ROMs will not retain the base hash. They are treated as derivatives and must be tested in an emulator and never distributed.
 
 ## PartyPlanner64 workflow
 
-[PartyPlanner64](https://github.com/PartyPlanner64/PartyPlanner64) edits boards for NTSC-U Mario Party 1–3. Use PP64 to create the board, save the user-owned ROM, then use MPT to validate the target, generate compatible codes, and test a copy in an N64 emulator. PP64 requires Expansion Pak-equivalent 8 MB RAM; see the [integration research note](docs/research/partyplanner64-integration.md) for identities, symbols, events, and interoperability boundaries.
+[PartyPlanner64](https://github.com/PartyPlanner64/PartyPlanner64) edits boards for NTSC-U Mario Party 1–3. Use PP64 to create the board, save the ROM, then use MPT to validate the target, generate compatible codes, and test a copy in an N64 emulator. PP64 requires Expansion Pak-equivalent 8 MB RAM; see the [integration research note](docs/research/partyplanner64-integration.md) for identities, symbols, events, and interoperability boundaries.
 
 MPT does not bundle ROMs, extracted game assets, or PP64’s private editor data.
 
